@@ -1,4 +1,4 @@
-module github.com/MauCastillo/alana
+module github.com/alana
 
 go 1.20
 

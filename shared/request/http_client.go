@@ -1,10 +1,12 @@
-package models
+package request
 
 import (
 	"errors"
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/alana/shared/env"
 )
 
 type HTTPClient struct {
@@ -14,12 +16,16 @@ type HTTPClient struct {
 var (
 	ErrURLEmpty    = errors.New("url empty")
 	ErrParsingBody = errors.New("parsing body")
+
+	timeoutConnections = env.GetInt64("TIMEOUT", 10)
+	maxLimitConnections = env.GetInt64("MAX_LIMIT_CONNECTIONS", 10)
+	DisableCompression = env.GetBool("DISABLE_COMPRESSION", true)
 )
 
 func NewHTTPClient() (*HTTPClient, error) {
 	tr := &http.Transport{
-		MaxIdleConns:       10,
-		IdleConnTimeout:    30 * time.Second,
+		MaxIdleConns:       int(maxLimitConnections),
+		IdleConnTimeout:    time.Duration(timeoutConnections) * time.Second,
 		DisableCompression: true,
 	}
 
