@@ -8,36 +8,43 @@ import (
 
 func TestMinute(t *testing.T) {
 	c := require.New(t)
+
 	c.Equal("1m", Minute.Value)
 }
 
 func TestThreeMinutes(t *testing.T) {
 	c := require.New(t)
+
 	c.Equal("3m", ThreeMinutes.Value)
 }
 
 func TestFiveMinutes(t *testing.T) {
 	c := require.New(t)
+
 	c.Equal("5m", FiveMinutes.Value)
 }
 
 func TestFifteenMinutes(t *testing.T) {
 	c := require.New(t)
+
 	c.Equal("15m", FifteenMinutes.Value)
 }
 
 func TestThirtyMinutes(t *testing.T) {
 	c := require.New(t)
+
 	c.Equal("30m", ThirtyMinutes.Value)
 }
 
 func TestHour(t *testing.T) {
 	c := require.New(t)
+
 	c.Equal("1h", Hour.Value)
 }
 
 func TestTwoHours(t *testing.T) {
 	c := require.New(t)
+
 	c.Equal("2h", TwoHours.Value)
 }
 
@@ -48,6 +55,7 @@ func TestFourHours(t *testing.T) {
 
 func TestSixHours(t *testing.T) {
 	c := require.New(t)
+
 	c.Equal("6h", SixHours.Value)
 }
 
@@ -58,6 +66,7 @@ func TestEightHours(t *testing.T) {
 
 func TestTwelveHours(t *testing.T) {
 	c := require.New(t)
+
 	c.Equal("12h", TwelveHours.Value)
 }
 
@@ -68,20 +77,24 @@ func TestDay(t *testing.T) {
 
 func TestThreeDays(t *testing.T) {
 	c := require.New(t)
+
 	c.Equal("3d", ThreeDays.Value)
 }
 
 func TestWeek(t *testing.T) {
 	c := require.New(t)
+
 	c.Equal("1w", Week.Value)
 }
 
 func TestMonth(t *testing.T) {
 	c := require.New(t)
+
 	c.Equal("1M", Month.Value)
 }
 
 func TestSeconds(t *testing.T) {
 	c := require.New(t)
+	
 	c.Equal("1s", Seconds.Value)
 }
