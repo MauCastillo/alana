@@ -1,4 +1,4 @@
-package interval
+package intervals
 
 // Interval represents interval enum.
 type Interval struct {

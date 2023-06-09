@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/alana/shared/env"
+	"github.com/MauCastillo/alana/shared/env"
 )
 
 type HTTPClient struct {
@@ -17,9 +17,9 @@ var (
 	ErrURLEmpty    = errors.New("url empty")
 	ErrParsingBody = errors.New("parsing body")
 
-	timeoutConnections = env.GetInt64("TIMEOUT", 10)
+	timeoutConnections  = env.GetInt64("TIMEOUT", 10)
 	maxLimitConnections = env.GetInt64("MAX_LIMIT_CONNECTIONS", 10)
-	DisableCompression = env.GetBool("DISABLE_COMPRESSION", true)
+	DisableCompression  = env.GetBool("DISABLE_COMPRESSION", true)
 )
 
 func NewHTTPClient() (*HTTPClient, error) {
