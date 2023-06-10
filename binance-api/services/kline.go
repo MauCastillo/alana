@@ -2,17 +2,17 @@ package services
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/MauCastillo/alana/binance-api/intervals"
 	"github.com/MauCastillo/alana/binance-api/symbols"
 	"github.com/MauCastillo/alana/shared/env"
 	"github.com/adshao/go-binance/v2"
+
 )
 
 var (
-	apiKey    = env.GetString("API_KEY", "JCXUeiPBLpWo26x6CPFZ7TrQvIGHP9yw1GfcGjhNQW288U2YsWzWi8earWSoAyKB")
-	secretKey = env.GetString("SECRET_KEY", "bx7O2inaH9UHVZVtnL6X9ckVViE8msQYYdn95nZC0DSc2XBmObI1PTisMHNzb6Fw")
+	apiKey      = env.GetString("API_KEY", "JCXUeiPBLpWo26x6CPFZ7TrQvIGHP9yw1GfcGjhNQW288U2YsWzWi8earWSoAyKB")
+	secretKey   = env.GetString("SECRET_KEY", "bx7O2inaH9UHVZVtnL6X9ckVViE8msQYYdn95nZC0DSc2XBmObI1PTisMHNzb6Fw")
 	userTestNet = env.GetBool("USE_TEST_NET", true)
 )
 
@@ -34,13 +34,16 @@ func NewKlineService(symbol symbols.Symbols, interval intervals.Interval, limitK
 		client: client}, nil
 }
 
-func (k *KlineService) DepthService() {
-	res, err := k.client.NewDepthService().Symbol("LTCBTC").
-		Do(context.Background())
+func (k *KlineService) ListPricesService(symbol symbols.Symbols) (*binance.SymbolPrice, error) {
+	prices, err := k.client.NewListPricesService().Symbol(symbol.Value).Do(context.Background())
 	if err != nil {
-		return
+		return nil, err
 	}
 
-	fmt.Print(res)
+	var current binance.SymbolPrice
+	if len(prices) > 0 {
+		current = *prices[0]
+	}
 
+	return &current, nil
 }
