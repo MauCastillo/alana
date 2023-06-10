@@ -1,4 +1,4 @@
-package uikline
+package services
 
 import (
 	"testing"
