@@ -41,7 +41,7 @@ func TestNotLessMoney(t *testing.T) {
 	tempList := []*binance.Kline{{Close: "59.0"}, {Close: "25.0"}, {Close: "16.0"}, {Close: "0.7"}, {Close: "0.18"}}
 
 	rsi := CalculateRSI(tempList)
-	c.Equal(float64(0.006799945600434398), rsi)
+	c.Equal(float64(0.0006800361779255581), rsi)
 }
 
 func TestOnlyWonMoney(t *testing.T) {
@@ -50,5 +50,5 @@ func TestOnlyWonMoney(t *testing.T) {
 	tempList := []*binance.Kline{{Close: "0.01"}, {Close: "2.0"}, {Close: "16.0"}, {Close: "70.5"}, {Close: "180"}}
 
 	rsi := CalculateRSI(tempList)
-	c.Equal(float64(99.99777770370123), rsi)
+	c.Equal(float64(99.99977776592529), rsi)
 }

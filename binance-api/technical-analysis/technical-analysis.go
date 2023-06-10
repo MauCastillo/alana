@@ -70,7 +70,7 @@ func calculateAverage(data []float64) float64 {
 		sum += value
 	}
 	if sum <= float64(0){
-		return float64(0.001)
+		return float64(0.0001)
 	}
 
 	average := sum / float64(len(data))

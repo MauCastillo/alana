@@ -10,13 +10,13 @@ import (
 )
 
 var (
-	limitKline  = int(env.GetInt64("LIMIT_KLINE", 4))
+	limitKline  = int(env.GetInt64("LIMIT_KLINE", 500))
 )
 
 
 
 func main() {
-	simulation, err := simultor.NewSimulator(*symbols.BtcBusd, *intervals.FifteenMinutes, limitKline)
+	simulation, err := simultor.NewSimulator(*symbols.BtcBusd, *intervals.Minute, limitKline)
 	if err != nil{
 		fmt.Print(err)
 	}

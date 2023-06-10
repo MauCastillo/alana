@@ -16,8 +16,8 @@ var (
 	limitRSIBuy = env.GetFloat64("LIMIT_RSI_BUY", 30)
 	limitOSBuy  = env.GetFloat64("LIMIT_OS_BUY", 20)
 
-	limitRSISale = env.GetFloat64("LIMIT_RSI_SALE", 30)
-	limitOSSale  = env.GetFloat64("LIMIT_OS_SALE", 20)
+	limitRSISale = env.GetFloat64("LIMIT_RSI_SALE", 70)
+	limitOSSale  = env.GetFloat64("LIMIT_OS_SALE", 80)
 )
 
 type Simulator struct {
@@ -54,7 +54,7 @@ func (s *Simulator) IsTOBuy() bool {
 }
 
 func (s *Simulator) IsTOSale() bool {
-	option := s.StochasticOscillator >= limitOSSale && s.RelativeStrenghtIndex >= limitRSISale
+	option := s.StochasticOscillator >= limitOSSale || s.RelativeStrenghtIndex >= limitRSISale
 
 	return option
 }
