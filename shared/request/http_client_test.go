@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/MauCastillo/alana/shared/cnn"
 	"github.com/stretchr/testify/require"
 )
 
 const (
-	pokemonApI = "https://pokeapi.co/api/v2/ability/?offset=1&limit=1"
+	pokemonAPI = "https://pokeapi.co/api/v2/ability/?offset=1&limit=1"
+	cnnAPI     = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata/2023-06-12"
 )
 
 type pokemon struct {
@@ -28,7 +30,7 @@ func TestGet(t *testing.T) {
 	c.NoError(err)
 	c.NotNil(client)
 
-	body, err := client.Get(pokemonApI)
+	body, err := client.Get(pokemonAPI)
 	c.NoError(err)
 
 	var animal pokemon
@@ -38,6 +40,31 @@ func TestGet(t *testing.T) {
 	c.NotEmpty(animal.Results[0].Name)
 }
 
+func TestGetHeaders(t *testing.T) {
+	c := require.New(t)
+
+	client, err := NewHTTPClient()
+	c.NoError(err)
+	c.NotNil(client)
+
+	header := []Header{{Key: "User-Agent", Value: "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0"},
+		{Key: "Accept", Value: "*/*"},
+		{Key: "Accept-Language", Value: "en-US,en;q=0.5"},
+		{Key: "Sec-Fetch-Dest", Value: "empty"},
+		{Key: "Sec-Fetch-Mode", Value: "cors"},
+		{Key: "Sec-Fetch-Site", Value: "cross-site"},
+	}
+
+	body, err := client.GetwithHeaders(cnnAPI, header)
+
+	c.NoError(err)
+
+	var response cnn.APIResponse
+	err = json.Unmarshal(body, &response)
+	c.NoError(err)
+
+	c.Equal("extreme greed", response.FearAndGreed.Rating)
+}
 func TestGetEmpty(t *testing.T) {
 	c := require.New(t)
 

@@ -13,8 +13,8 @@ import (
 )
 
 var (
-	limitRSIBuy = env.GetFloat64("LIMIT_RSI_BUY", 30)
-	limitOSBuy  = env.GetFloat64("LIMIT_OS_BUY", 20)
+	limitRSIBuy = env.GetFloat64("LIMIT_RSI_BUY", 50)
+	limitOSBuy  = env.GetFloat64("LIMIT_OS_BUY", 40)
 
 	limitRSISale = env.GetFloat64("LIMIT_RSI_SALE", 70)
 	limitOSSale  = env.GetFloat64("LIMIT_OS_SALE", 80)

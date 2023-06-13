@@ -13,6 +13,11 @@ type HTTPClient struct {
 	client *http.Client
 }
 
+type Header struct {
+	Key   string
+	Value string
+}
+
 var (
 	ErrURLEmpty    = errors.New("url empty")
 	ErrParsingBody = errors.New("parsing body")
@@ -46,4 +51,35 @@ func (h *HTTPClient) Get(url string) ([]byte, error) {
 	}
 
 	return body, nil
+}
+
+func (h *HTTPClient) GetwithHeaders(url string, headers []Header) ([]byte, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// Set headers
+	for _, value := range headers {
+		req.Header.Set(value.Key, value.Value)
+	}
+
+	// Send the request
+	resp, err := h.client.Do(req)
+	if err != nil {
+		return nil, ErrURLEmpty
+	}
+
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, ErrParsingBody
+	}
+
+	return body, nil
+}
+
+func (h *HTTPClient) SetHeader(headers [][]string) {
+
 }
