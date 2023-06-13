@@ -5,9 +5,9 @@ import (
 
 	"github.com/MauCastillo/alana/binance-api/intervals"
 	"github.com/MauCastillo/alana/binance-api/symbols"
+	"github.com/MauCastillo/alana/shared/convertions"
 	"github.com/MauCastillo/alana/shared/env"
 	"github.com/adshao/go-binance/v2"
-
 )
 
 var (
@@ -46,4 +46,21 @@ func (k *KlineService) ListPricesService(symbol symbols.Symbols) (*binance.Symbo
 	}
 
 	return &current, nil
+}
+
+func (k *KlineService) MaxValueClose() *binance.Kline {
+	maxValue := k.Kline[0]
+	var local float64
+	var newest float64
+
+	for _, item := range k.Kline {
+		local = convertions.StringToFloat64(maxValue.Close)
+		newest = convertions.StringToFloat64(item.Close)
+
+		if local < newest {
+			maxValue = item
+		}
+	}
+
+	return maxValue
 }

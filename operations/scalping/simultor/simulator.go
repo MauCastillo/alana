@@ -7,9 +7,9 @@ import (
 	"github.com/MauCastillo/alana/binance-api/services"
 	"github.com/MauCastillo/alana/binance-api/symbols"
 	technicalanalysis "github.com/MauCastillo/alana/binance-api/technical-analysis"
+	"github.com/MauCastillo/alana/shared/convertions"
 	"github.com/MauCastillo/alana/shared/env"
 	"github.com/adshao/go-binance/v2"
-
 )
 
 var (
@@ -66,4 +66,12 @@ func (s *Simulator) CurrentPrice() *binance.SymbolPrice {
 	}
 
 	return price
+}
+
+func (s *Simulator) ObjectivePrice() float64 {
+	bestOption := s.service.MaxValueClose()
+	close := convertions.StringToFloat64(bestOption.Close)
+	low := convertions.StringToFloat64(bestOption.Low)
+	
+	return (close + low) / 2
 }
