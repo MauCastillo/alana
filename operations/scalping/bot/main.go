@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	limitKline    = int(env.GetInt64("LIMIT_KLINE", 500))
-	waitingPeriod = int(env.GetInt64("WAITING", 2))
+	limitKline    = int(env.GetInt64("LIMIT_KLINE", 150))
+	waitingPeriod = int(env.GetInt64("WAITING", 5))
 	cycles        = int(env.GetInt64("Cycles", 15))
 	ganancia      = float64(0)
 	PriceBuy      = float64(9999999999)
