@@ -79,7 +79,3 @@ func (h *HTTPClient) GetwithHeaders(url string, headers []Header) ([]byte, error
 
 	return body, nil
 }
-
-func (h *HTTPClient) SetHeader(headers [][]string) {
-
-}

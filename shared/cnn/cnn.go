@@ -1,117 +1,91 @@
 package cnn
 
 import (
+	"encoding/json"
+	"fmt"
 	"time"
+
+	"github.com/MauCastillo/alana/shared/cnn/models"
+	"github.com/MauCastillo/alana/shared/request"
 )
 
-type APIResponse struct {
-	FearAndGreed struct {
-		Score          float64   `json:"score"`
-		Rating         string    `json:"rating"`
-		Timestamp      time.Time `json:"timestamp"`
-		PreviousClose  float64   `json:"previous_close"`
-		Previous1Week  float64   `json:"previous_1_week"`
-		Previous1Month float64   `json:"previous_1_month"`
-		Previous1Year  float64   `json:"previous_1_year"`
-	} `json:"fear_and_greed"`
-	FearAndGreedHistorical struct {
-		Timestamp float64 `json:"timestamp"`
-		Score     float64 `json:"score"`
-		Rating    string  `json:"rating"`
-		Data      []struct {
-			X      float64 `json:"x"`
-			Y      float64 `json:"y"`
-			Rating string  `json:"rating"`
-		} `json:"data"`
-	} `json:"fear_and_greed_historical"`
-	MarketMomentumSp500 struct {
-		Timestamp float64 `json:"timestamp"`
-		Score     float64 `json:"score"`
-		Rating    string  `json:"rating"`
-		Data      []struct {
-			X      float64 `json:"x"`
-			Y      float64 `json:"y"`
-			Rating string  `json:"rating"`
-		} `json:"data"`
-	} `json:"market_momentum_sp500"`
-	MarketMomentumSp125 struct {
-		Timestamp float64 `json:"timestamp"`
-		Score     float64 `json:"score"`
-		Rating    string  `json:"rating"`
-		Data      []struct {
-			X      float64 `json:"x"`
-			Y      float64 `json:"y"`
-			Rating string  `json:"rating"`
-		} `json:"data"`
-	} `json:"market_momentum_sp125"`
-	StockPriceStrength struct {
-		Timestamp float64 `json:"timestamp"`
-		Score     float64 `json:"score"`
-		Rating    string  `json:"rating"`
-		Data      []struct {
-			X      float64 `json:"x"`
-			Y      float64 `json:"y"`
-			Rating string  `json:"rating"`
-		} `json:"data"`
-	} `json:"stock_price_strength"`
-	StockPriceBreadth struct {
-		Timestamp float64 `json:"timestamp"`
-		Score     float64 `json:"score"`
-		Rating    string  `json:"rating"`
-		Data      []struct {
-			X      float64 `json:"x"`
-			Y      float64 `json:"y"`
-			Rating string  `json:"rating"`
-		} `json:"data"`
-	} `json:"stock_price_breadth"`
-	PutCallOptions struct {
-		Timestamp float64 `json:"timestamp"`
-		Score     float64 `json:"score"`
-		Rating    string  `json:"rating"`
-		Data      []struct {
-			X      float64 `json:"x"`
-			Y      float64 `json:"y"`
-			Rating string  `json:"rating"`
-		} `json:"data"`
-	} `json:"put_call_options"`
-	MarketVolatilityVix struct {
-		Timestamp float64 `json:"timestamp"`
-		Score     int     `json:"score"`
-		Rating    string  `json:"rating"`
-		Data      []struct {
-			X      float64 `json:"x"`
-			Y      float64 `json:"y"`
-			Rating string  `json:"rating"`
-		} `json:"data"`
-	} `json:"market_volatility_vix"`
-	MarketVolatilityVix50 struct {
-		Timestamp float64 `json:"timestamp"`
-		Score     int     `json:"score"`
-		Rating    string  `json:"rating"`
-		Data      []struct {
-			X      float64 `json:"x"`
-			Y      float64 `json:"y"`
-			Rating string  `json:"rating"`
-		} `json:"data"`
-	} `json:"market_volatility_vix_50"`
-	JunkBondDemand struct {
-		Timestamp float64 `json:"timestamp"`
-		Score     float64 `json:"score"`
-		Rating    string  `json:"rating"`
-		Data      []struct {
-			X      float64 `json:"x"`
-			Y      float64 `json:"y"`
-			Rating string  `json:"rating"`
-		} `json:"data"`
-	} `json:"junk_bond_demand"`
-	SafeHavenDemand struct {
-		Timestamp float64 `json:"timestamp"`
-		Score     float64 `json:"score"`
-		Rating    string  `json:"rating"`
-		Data      []struct {
-			X      float64 `json:"x"`
-			Y      float64 `json:"y"`
-			Rating string  `json:"rating"`
-		} `json:"data"`
-	} `json:"safe_haven_demand"`
+const (
+	cnnAPI        = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata/%s"
+	timeFormatter = "2006-01-02"
+)
+
+var (
+	lastTime = ""
+)
+
+type FearAndGreedCNN struct {
+	apiResponse *models.APIResponse
+}
+
+func NewFearAndGreedCNN() (*FearAndGreedCNN, error) {
+	cnnResponse, err := requestCNNAPI()
+	if err != nil {
+		return nil, err
+	}
+
+	return &FearAndGreedCNN{apiResponse: cnnResponse}, nil
+}
+
+func requestCNNAPI() (*models.APIResponse, error) {
+
+	var response models.APIResponse
+
+	body, err := Refresh()
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	return &response, nil
+}
+
+func Refresh() ([]byte, error) {
+	client, err := request.NewHTTPClient()
+
+	if err != nil {
+		return []byte{}, err
+	}
+
+	header := []request.Header{{Key: "User-Agent", Value: "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0"},
+		{Key: "Accept", Value: "*/*"},
+		{Key: "Accept-Language", Value: "en-US,en;q=0.5"},
+		{Key: "Sec-Fetch-Dest", Value: "empty"},
+		{Key: "Sec-Fetch-Mode", Value: "cors"},
+		{Key: "Sec-Fetch-Site", Value: "cross-site"},
+	}
+
+	now := time.Now()
+
+	lastTime = now.Format(timeFormatter)
+
+	apiURL := fmt.Sprintf(cnnAPI, lastTime)
+	body, err := client.GetwithHeaders(apiURL, header)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return body, err
+}
+
+func (f *FearAndGreedCNN) Get() *models.APIResponse {
+	now := time.Now()
+	if lastTime != now.Format(timeFormatter) {
+		cnnResponse, err := requestCNNAPI()
+		if err != nil {
+			return f.apiResponse
+		}
+
+		f.apiResponse = cnnResponse
+	}
+	
+	return f.apiResponse
 }

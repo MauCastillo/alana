@@ -7,6 +7,8 @@ import (
 	"github.com/MauCastillo/alana/binance-api/services"
 	"github.com/MauCastillo/alana/binance-api/symbols"
 	technicalanalysis "github.com/MauCastillo/alana/binance-api/technical-analysis"
+	"github.com/MauCastillo/alana/shared/cnn"
+	"github.com/MauCastillo/alana/shared/cnn/models"
 	"github.com/MauCastillo/alana/shared/convertions"
 	"github.com/MauCastillo/alana/shared/env"
 	"github.com/adshao/go-binance/v2"
@@ -21,6 +23,7 @@ var (
 )
 
 type Simulator struct {
+	FearAndGreedCNN       *models.APIResponse
 	StochasticOscillator  float64
 	RelativeStrenghtIndex float64
 	Symbol                symbols.Symbols
@@ -28,7 +31,7 @@ type Simulator struct {
 }
 
 func NewSimulator(symbol symbols.Symbols, interval intervals.Interval, limitKline int) (*Simulator, error) {
-	localKlineToBTC, err := services.NewKlineService(*symbols.BtcBusd, *intervals.FifteenMinutes, limitKline)
+	localKlineToBTC, err := services.NewKlineService(*symbols.BtcBusd, interval, limitKline)
 	if err != nil {
 		fmt.Println(err.Error())
 		return nil, err
@@ -42,6 +45,7 @@ func NewSimulator(symbol symbols.Symbols, interval intervals.Interval, limitKlin
 		RelativeStrenghtIndex: relativeStrenghtIndex,
 		Symbol:                symbol,
 		service:               localKlineToBTC,
+		FearAndGreedCNN:       FearAndGreed(),
 	}
 
 	return simulator, nil
@@ -72,6 +76,17 @@ func (s *Simulator) ObjectivePrice() float64 {
 	bestOption := s.service.MaxValueClose()
 	close := convertions.StringToFloat64(bestOption.Close)
 	low := convertions.StringToFloat64(bestOption.Low)
-	
+
 	return (close + low) / 2
+}
+
+func FearAndGreed() *models.APIResponse {
+	request, err := cnn.NewFearAndGreedCNN()
+	if err != nil {
+		return nil
+	}
+
+	req := request.Get()
+
+	return req
 }

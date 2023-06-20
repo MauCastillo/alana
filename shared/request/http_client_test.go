@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/MauCastillo/alana/shared/cnn"
+	"github.com/MauCastillo/alana/shared/cnn/models"
 	"github.com/stretchr/testify/require"
 )
 
@@ -59,7 +59,7 @@ func TestGetHeaders(t *testing.T) {
 
 	c.NoError(err)
 
-	var response cnn.APIResponse
+	var response models.APIResponse
 	err = json.Unmarshal(body, &response)
 	c.NoError(err)
 
