@@ -97,6 +97,7 @@ func SavewareHouse(simulation *simultor.Simulator, goodPrice float64) error {
 		SafeHavenDemandScore:       simulation.FearAndGreedCNN.SafeHavenDemand.Score,
 		StochasticOscillator:       simulation.StochasticOscillator,
 		RelativeStrenghtIndex:      simulation.RelativeStrenghtIndex,
+		PriceBuy:                   PriceBuy,
 	}
 
 	database, err := sqlite.NewDatabase()
@@ -109,6 +110,8 @@ func SavewareHouse(simulation *simultor.Simulator, goodPrice float64) error {
 		if err != nil {
 			return err
 		}
+		
+		IsCreateTable = false
 	}
 
 	listOp := []models.Operation{op}
