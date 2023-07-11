@@ -26,11 +26,21 @@ type Simulator struct {
 	FearAndGreedCNN       *models.APIResponse
 	StochasticOscillator  float64
 	RelativeStrenghtIndex float64
-	Symbol                symbols.Symbols
+	Symbol                *symbols.Symbols
 	service               *services.KlineService
+	infoKline             []*binance.Kline
+	priceBuy              float64
 }
 
-func NewSimulator(symbol symbols.Symbols, interval intervals.Interval, limitKline int) (*Simulator, error) {
+func (s *Simulator) SetPriceBuy(price float64) {
+	s.priceBuy = price
+}
+
+func (s *Simulator) GetPriceBuy() float64 {
+	return s.priceBuy
+}
+
+func NewSimulator(symbol *symbols.Symbols, interval intervals.Interval, limitKline int) (*Simulator, error) {
 	localKlineToBTC, err := services.NewKlineService(*symbols.BtcBusd, interval, limitKline)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -46,6 +56,8 @@ func NewSimulator(symbol symbols.Symbols, interval intervals.Interval, limitKlin
 		Symbol:                symbol,
 		service:               localKlineToBTC,
 		FearAndGreedCNN:       FearAndGreed(),
+		infoKline:             localKlineToBTC.Kline,
+		priceBuy:              float64(-1),
 	}
 
 	return simulator, nil
@@ -89,4 +101,12 @@ func FearAndGreed() *models.APIResponse {
 	req := request.Get()
 
 	return req
+}
+
+func (s *Simulator) RawDataDatabase() []float64 {
+	var output []float64
+	for _, element := range s.infoKline {
+		output = append(output, convertions.StringToFloat64(element.Close))
+	}
+	return output
 }

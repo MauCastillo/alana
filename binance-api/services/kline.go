@@ -26,6 +26,7 @@ func NewKlineService(symbol symbols.Symbols, interval intervals.Interval, limitK
 	client := binance.NewClient(apiKey, secretKey)
 	klines, err := client.NewKlinesService().Symbol(symbol.Value).
 		Interval(interval.Value).Limit(limitKline).Do(context.Background())
+
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +35,7 @@ func NewKlineService(symbol symbols.Symbols, interval intervals.Interval, limitK
 		client: client}, nil
 }
 
-func (k *KlineService) ListPricesService(symbol symbols.Symbols) (*binance.SymbolPrice, error) {
+func (k *KlineService) ListPricesService(symbol *symbols.Symbols) (*binance.SymbolPrice, error) {
 	prices, err := k.client.NewListPricesService().Symbol(symbol.Value).Do(context.Background())
 	if err != nil {
 		return nil, err

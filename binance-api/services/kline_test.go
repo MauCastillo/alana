@@ -18,7 +18,7 @@ func TestGetNewKlineService(t *testing.T) {
 	line := klineService.MaxValueClose()
 	c.True(line.OpenTime > 11)
 
-	price, err := klineService.ListPricesService(*symbols.BtcBusd)
+	price, err := klineService.ListPricesService(symbols.BtcBusd)
 	c.NoError(err)
 	c.Equal(symbols.BtcBusd.Value, price.Symbol)
 

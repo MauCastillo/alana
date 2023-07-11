@@ -35,11 +35,13 @@ func NewDatabase() (*DataBase, error) {
 	return database, nil
 }
 
-func (d *DataBase) CreateNewTable() error {
-	sts := `DROP TABLE IF EXISTS training_data;
-		CREATE TABLE training_data(id INTEGER PRIMARY KEY, data TEXT, good_price float);`
+func (d *DataBase) CreateNewTable(tableName string) error {
+	sts := `DROP TABLE IF EXISTS %s;
+		CREATE TABLE %s(id INTEGER PRIMARY KEY, operation TEXT, good_price float);`
 
-	_, err := d.Database.Exec(sts)
+	queryCreation := fmt.Sprintf(sts, tableName, tableName)
+
+	_, err := d.Database.Exec(queryCreation)
 	if err != nil {
 		return err
 	}
@@ -47,7 +49,7 @@ func (d *DataBase) CreateNewTable() error {
 	return nil
 }
 
-func (d *DataBase) InsertOperations(op []models.Operation, goodPrice float64) error {
+func (d *DataBase) InsertOperations(tableName string, goodPrice float64, op []models.Operation) error {
 	var queryInsert string
 	for _, operation := range op {
 		out, err := json.Marshal(operation)
@@ -55,7 +57,7 @@ func (d *DataBase) InsertOperations(op []models.Operation, goodPrice float64) er
 			continue
 		}
 
-		queryInsert += fmt.Sprintf("INSERT INTO training_data(data, good_price) VALUES('%s',%f);", string(out), goodPrice)
+		queryInsert += fmt.Sprintf("INSERT INTO %s(operation, good_price) VALUES('%s',%f);", tableName, string(out), goodPrice)
 	}
 
 	_, err := d.Database.Exec(queryInsert)
