@@ -3,12 +3,7 @@ package database
 import (
 	"github.com/MauCastillo/alana/operations/scalping/models"
 	"github.com/MauCastillo/alana/operations/scalping/simultor"
-	"github.com/MauCastillo/alana/shared/env"
 	"github.com/MauCastillo/alana/shared/sqlite"
-)
-
-var (
-	IsCreateTable = env.GetBool("CREATE_TABLE", false)
 )
 
 func SavewareHouse(simulation *simultor.Simulator, goodPrice float64, tableName string) error {
@@ -36,17 +31,22 @@ func SavewareHouse(simulation *simultor.Simulator, goodPrice float64, tableName 
 		return err
 	}
 
-	defer database.Database.Close()
-
-	if IsCreateTable {
-		err = database.CreateNewTable(tableName)
-		if err != nil {
-			return err
-		}
-	}
-
 	listOp := []models.Operation{op}
 	err = database.InsertOperations(tableName, goodPrice, listOp)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func Init(tableName string) error {
+	database, err := sqlite.NewDatabase()
+	if err != nil {
+		return err
+	}
+
+	err = database.CreateNewTable(tableName)
 	if err != nil {
 		return err
 	}
