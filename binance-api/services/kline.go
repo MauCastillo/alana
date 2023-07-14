@@ -54,8 +54,8 @@ func (k *KlineService) MaxValueClose() *binance.Kline {
 	var local float64
 	var newest float64
 
+	local = convertions.StringToFloat64(maxValue.Close)
 	for _, item := range k.Kline {
-		local = convertions.StringToFloat64(maxValue.Close)
 		newest = convertions.StringToFloat64(item.Close)
 
 		if local < newest {

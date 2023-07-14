@@ -8,11 +8,10 @@ import (
 )
 
 var (
-	IsCreateTable = env.GetBool("CREATE_TABLE", true)
-	TableName     = env.GetString("TABLE_NAME", "basic-training")
+	IsCreateTable = env.GetBool("CREATE_TABLE", false)
 )
 
-func SavewareHouse(simulation *simultor.Simulator, goodPrice float64) error {
+func SavewareHouse(simulation *simultor.Simulator, goodPrice float64, tableName string) error {
 	op := models.Operation{
 		FearAndGreedScore:          simulation.FearAndGreedCNN.FearAndGreed.Score,
 		FearAndGreedPreviousClose:  simulation.FearAndGreedCNN.FearAndGreed.PreviousClose,
@@ -22,10 +21,13 @@ func SavewareHouse(simulation *simultor.Simulator, goodPrice float64) error {
 		MarketMomentumSp125Score:   simulation.FearAndGreedCNN.MarketMomentumSp125.Score,
 		JunkBondDemandScore:        simulation.FearAndGreedCNN.JunkBondDemand.Score,
 		SafeHavenDemandScore:       simulation.FearAndGreedCNN.SafeHavenDemand.Score,
-		StochasticOscillator:       simulation.StochasticOscillator,
+		StochasticOscillatorK:      simulation.StochasticOscillatorK,
+		StochasticOscillatorD:      simulation.StochasticOscillatorD,
 		RelativeStrenghtIndex:      simulation.RelativeStrenghtIndex,
 		PriceBuy:                   simulation.GetPriceBuy(),
 		MarketInfo:                 simulation.RawDataDatabase(),
+		MarketInfoBTC:              simulation.RawDataDatabaseBTC(),
+		MarketInfoETH:              simulation.RawDataDatabaseETH(),
 		Status:                     goodPrice > 0,
 	}
 
@@ -34,15 +36,17 @@ func SavewareHouse(simulation *simultor.Simulator, goodPrice float64) error {
 		return err
 	}
 
-	err = database.CreateNewTable(TableName)
-	if err != nil {
-		return err
+	defer database.Database.Close()
+
+	if IsCreateTable {
+		err = database.CreateNewTable(tableName)
+		if err != nil {
+			return err
+		}
 	}
 
-	IsCreateTable = false
-
 	listOp := []models.Operation{op}
-	err = database.InsertOperations(TableName, goodPrice, listOp)
+	err = database.InsertOperations(tableName, goodPrice, listOp)
 	if err != nil {
 		return err
 	}

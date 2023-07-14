@@ -20,12 +20,10 @@ func TestRunCollector(t *testing.T) {
 	coin := symbols.BtcBusd
 
 	u, err := RunCollector(coin, limitKline, waitingPeriod, cycles, periodSell)
-	c.Equal(u.Earn, float64(0))
+	c.Equal(u.Coin.Value, symbols.BtcBusd.Value)
 	c.NoError(err)
-	c.Equal(limitKline, 60)
 }
 
 func cleanup() {
 	_ = os.Remove("data-warehouse.sqlite3")
 }
-

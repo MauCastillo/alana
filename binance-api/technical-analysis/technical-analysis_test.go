@@ -12,13 +12,15 @@ func TestCalculateStochasticOscillator(t *testing.T) {
 
 	tempList := []*binance.Kline{{Close: "50.0"}, {Close: "55.0"}, {Close: "52.0"}, {Close: "48"}, {Close: "53"}}
 
-	k := CalculateStochasticOscillator(tempList, 5)
+	k, d := CalculateStochasticOscillator(tempList, 5)
 	c.Equal(float64(71.42857142857143), k)
+	c.Equal(float64(51.6), d)
 
 	tempList = []*binance.Kline{{Close: "50.0"}, {Close: "55.0"}, {Close: "52.0"}, {Close: "48"}, {Close: "53"}, {Close: "57"}, {Close: "60"}, {Close: "58"}, {Close: "62"}, {Close: "59"}, {Close: "55"}, {Close: "50"}, {Close: "48"}, {Close: "45"}}
 
-	k = CalculateStochasticOscillator(tempList, 14)
+	k, d = CalculateStochasticOscillator(tempList, 14)
 	c.Equal(float64(0), k)
+	c.Equal(float64(53.714285714285715), d)
 }
 
 func TestCalculateRSI(t *testing.T) {

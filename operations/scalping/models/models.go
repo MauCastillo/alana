@@ -1,5 +1,9 @@
 package models
 
+import (
+	"github.com/MauCastillo/alana/binance-api/symbols"
+)
+
 type Operation struct {
 	FearAndGreedPrevious1Month float64   `json:"previous_1_month"`
 	FearAndGreedPrevious1Year  float64   `json:"previous_1_year"`
@@ -11,7 +15,18 @@ type Operation struct {
 	PriceBuy                   float64   `json:"price_buy"`
 	RelativeStrenghtIndex      float64   `json:"relative_strenght_index"`
 	SafeHavenDemandScore       float64   `json:"safe_haven_demand_score"`
-	StochasticOscillator       float64   `json:"stochastic_oscillator"`
+	StochasticOscillatorK      float64   `json:"stochastic_oscillator_k"`
+	StochasticOscillatorD      float64   `json:"stochastic_oscillator_d"`
 	MarketInfo                 []float64 `json:"market_info"`
+	MarketInfoBTC              []float64 `json:"market_info_btc"`
+	MarketInfoETH              []float64 `json:"market_info_eth"`
 	Status                     bool      `json:"status"`
+}
+
+type ExecutionParams struct {
+	LimitKline    int             `json:"limit_kline"`
+	WaitingPeriod int             `json:"waiting_period"`
+	PeriodSell    int             `json:"period_sell"`
+	Cycles        int             `json:"cycles"`
+	Coin          symbols.Symbols `json:"coin"`
 }

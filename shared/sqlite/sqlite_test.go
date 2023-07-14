@@ -4,7 +4,6 @@ import (
 	"math/rand"
 	"os"
 	"testing"
-	"fmt"
 
 	"github.com/MauCastillo/alana/operations/scalping/models"
 	"github.com/stretchr/testify/require"
@@ -19,6 +18,8 @@ func TestNewDatabase(t *testing.T) {
 
 	tableName := "testing"
 
+	defer os.Remove(databaseFileName)
+
 	err = data.CreateNewTable(tableName)
 	c.NoError(err)
 	op := []models.Operation{
@@ -29,9 +30,5 @@ func TestNewDatabase(t *testing.T) {
 		{FearAndGreedScore: float64(23.564), FearAndGreedPreviousClose: float64(556.106), SafeHavenDemandScore: rand.Float64() * 100},
 	}
 	err = data.InsertOperations(tableName, rand.Float64()*10, op)
-	c.NoError(err)
-
-	nameFile := fmt.Sprintf("%s.%s", dataBaseName, FileExtention)
-	err = os.Remove(nameFile)
 	c.NoError(err)
 }

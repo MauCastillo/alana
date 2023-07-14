@@ -15,14 +15,18 @@ var (
 	Good     = 0
 	Mistakes = 0
 	Neutral  = 0
-	Cycle    = 1
+)
+
+const (
+	TableFormat = "oscillator_strenght_%s"
 )
 
 type Util struct {
-	Accuracy int     `json:"accuracy"`
-	Mistakes int     `json:"mistakes"`
-	Neutral  int     `json:"neutral"`
-	Earn     float64 `json:"earn"`
+	Accuracy int             `json:"accuracy"`
+	Mistakes int             `json:"mistakes"`
+	Neutral  int             `json:"neutral"`
+	Earn     float64         `json:"earn"`
+	Coin     symbols.Symbols `json:"coin"`
 }
 
 func Iterractor(coin *symbols.Symbols, limitKline int) (*simultor.Simulator, error) {
@@ -33,48 +37,27 @@ func Iterractor(coin *symbols.Symbols, limitKline int) (*simultor.Simulator, err
 
 	currentPrice := simulation.CurrentPrice()
 	fmt.Printf("=> Activo: %s \nPrecio: %s\n", currentPrice.Symbol, currentPrice.Price)
-	fmt.Printf("=> Stochastic Oscillator: %f \nRelative Strenght Index: %f\n", simulation.StochasticOscillator, simulation.RelativeStrenghtIndex)
+	fmt.Printf("=> Stochastic Oscillator K: %f \n=> Stochastic Oscillator D: %f \nRelative Strenght Index: %f\n", simulation.StochasticOscillatorK, simulation.StochasticOscillatorD, simulation.RelativeStrenghtIndex)
 
-	if simulation.IsTOBuy() {
-		fmt.Println("**********************************************")
-		fmt.Println("Crear Orden de Compra")
-		fmt.Printf("Stochastic Oscillator: %f \nRelative Strenght Index: %f\n", simulation.StochasticOscillator, simulation.RelativeStrenghtIndex)
-		simulation.SetPriceBuy(convertions.StringToFloat64(currentPrice.Price))
-	}
-
-	if simulation.IsTOSale() {
-		fmt.Println("------------------------------------------------")
-		fmt.Println("No Comprar ni por el Putas")
-
-		fmt.Printf("Stochastic Oscillator: %f \n Relative Strenght Index: %f\n", simulation.StochasticOscillator, simulation.RelativeStrenghtIndex)
-	}
-
-	if !simulation.IsTOBuy() && !simulation.IsTOSale() {
-		Neutral++
-		fmt.Println("================================================")
-		fmt.Println("Simplemente No Se que hacer Necesito Mas Data XD")
-		fmt.Printf("Stochastic Oscillator: %f \nRelative Strenght Index: %f\n", simulation.StochasticOscillator, simulation.RelativeStrenghtIndex)
-		simulation.SetPriceBuy(convertions.StringToFloat64(currentPrice.Price))
-	}
-
+	simulation.SetPriceBuy(convertions.StringToFloat64(currentPrice.Price))
 	return simulation, err
 }
 
-func GetBestValue(s *simultor.Simulator, coin *symbols.Symbols, limitKline int) (float64, error) {
+func GetBestValue(s *simultor.Simulator, coin *symbols.Symbols, limitKline int, tableName string) (float64, error) {
 	simulation, err := simultor.NewSimulator(coin, *intervals.Minute, limitKline)
-	if err != nil || simulation.ObjectivePrice() < s.GetPriceBuy() {
-		err := database.SavewareHouse(s, float64(0))
-		if err != nil {
-			return float64(0), nil
-		}
-
+	if err != nil {
 		Mistakes++
 		return float64(0), nil
 	}
 
 	Good++
 
-	err = database.SavewareHouse(s, simulation.ObjectivePrice())
+	objetivePrice := 0.0
+	if simulation.ObjectivePrice() < s.GetPriceBuy() {
+		objetivePrice = simulation.ObjectivePrice()
+	}
+
+	err = database.SavewareHouse(s, objetivePrice, tableName)
 	if err != nil {
 		return float64(0), nil
 	}
@@ -91,7 +74,9 @@ func countdown(minute int) {
 }
 
 func RunCollector(coin *symbols.Symbols, limitKline, waitingPeriod, cycles, periodSell int) (*Util, error) {
+	tableName := fmt.Sprintf(TableFormat, coin.Name)
 	earn := float64(0)
+
 	for i := 0; i < cycles; i++ {
 		simulation, err := Iterractor(coin, limitKline)
 		if err != nil {
@@ -99,27 +84,27 @@ func RunCollector(coin *symbols.Symbols, limitKline, waitingPeriod, cycles, peri
 		}
 
 		countdown(waitingPeriod)
-		best, err := GetBestValue(simulation, coin, periodSell)
+		best, err := GetBestValue(simulation, coin, periodSell, tableName)
 		if err != nil {
 			return nil, err
 		}
 
-		Cycle++
 		if best > 0 {
 			earn += best - simulation.GetPriceBuy()
 		}
 
 	}
 
-	accuracy := (100 / Cycle) * Good
-	neutral := (100 / Cycle) * Neutral
-	mistakes := (100 / Cycle) * Mistakes
+	accuracy := (100 / cycles) * Good
+	neutral := (100 / cycles) * Neutral
+	mistakes := (100 / cycles) * Mistakes
 
 	util := &Util{
 		Accuracy: accuracy,
-		Mistakes: neutral,
-		Neutral:  mistakes,
+		Mistakes: mistakes,
+		Neutral:  neutral,
 		Earn:     earn,
+		Coin:     *coin,
 	}
 
 	return util, nil

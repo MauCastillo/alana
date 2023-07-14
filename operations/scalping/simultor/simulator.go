@@ -15,20 +15,18 @@ import (
 )
 
 var (
-	limitRSIBuy = env.GetFloat64("LIMIT_RSI_BUY", 50)
-	limitOSBuy  = env.GetFloat64("LIMIT_OS_BUY", 40)
-
-	limitRSISale = env.GetFloat64("LIMIT_RSI_SALE", 70)
-	limitOSSale  = env.GetFloat64("LIMIT_OS_SALE", 80)
+	periodStochasticOscillator = env.GetInt64("PERIOD_STOCHASTIS_OSCILLATOR", 3)
 )
 
 type Simulator struct {
 	FearAndGreedCNN       *models.APIResponse
-	StochasticOscillator  float64
+	StochasticOscillatorK float64
+	StochasticOscillatorD float64
 	RelativeStrenghtIndex float64
 	Symbol                *symbols.Symbols
 	service               *services.KlineService
-	infoKline             []*binance.Kline
+	serviceBTC            *services.KlineService
+	serviceETH            *services.KlineService
 	priceBuy              float64
 }
 
@@ -40,39 +38,41 @@ func (s *Simulator) GetPriceBuy() float64 {
 	return s.priceBuy
 }
 
-func NewSimulator(symbol *symbols.Symbols, interval intervals.Interval, limitKline int) (*Simulator, error) {
-	localKlineToBTC, err := services.NewKlineService(*symbols.BtcBusd, interval, limitKline)
+func NewSimulator(coin *symbols.Symbols, interval intervals.Interval, limitKline int) (*Simulator, error) {
+	localKlineCurrent, err := services.NewKlineService(*coin, interval, limitKline)
 	if err != nil {
 		fmt.Println(err.Error())
 		return nil, err
 	}
 
-	stochasticOscillator := technicalanalysis.CalculateStochasticOscillator(localKlineToBTC.Kline, 4)
-	relativeStrenghtIndex := technicalanalysis.CalculateRSI(localKlineToBTC.Kline)
+	localKlineBTC, err := services.NewKlineService(*symbols.BtcUsdt, interval, limitKline)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+
+	localKlineETH, err := services.NewKlineService(*symbols.EthUsdt, interval, limitKline)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+
+	stochasticOscillatorK, stochasticOscillatorD := technicalanalysis.CalculateStochasticOscillator(localKlineCurrent.Kline, int(periodStochasticOscillator))
+	relativeStrenghtIndex := technicalanalysis.CalculateRSI(localKlineCurrent.Kline)
 
 	simulator := &Simulator{
-		StochasticOscillator:  stochasticOscillator,
+		StochasticOscillatorK: stochasticOscillatorK,
+		StochasticOscillatorD: stochasticOscillatorD,
 		RelativeStrenghtIndex: relativeStrenghtIndex,
-		Symbol:                symbol,
-		service:               localKlineToBTC,
+		Symbol:                coin,
+		service:               localKlineCurrent,
+		serviceBTC:            localKlineBTC,
+		serviceETH:            localKlineETH,
 		FearAndGreedCNN:       FearAndGreed(),
-		infoKline:             localKlineToBTC.Kline,
 		priceBuy:              float64(-1),
 	}
 
 	return simulator, nil
-}
-
-func (s *Simulator) IsTOBuy() bool {
-	option := s.StochasticOscillator <= limitOSBuy && s.RelativeStrenghtIndex <= limitRSIBuy
-
-	return option
-}
-
-func (s *Simulator) IsTOSale() bool {
-	option := s.StochasticOscillator >= limitOSSale || s.RelativeStrenghtIndex >= limitRSISale
-
-	return option
 }
 
 func (s *Simulator) CurrentPrice() *binance.SymbolPrice {
@@ -105,7 +105,24 @@ func FearAndGreed() *models.APIResponse {
 
 func (s *Simulator) RawDataDatabase() []float64 {
 	var output []float64
-	for _, element := range s.infoKline {
+	for _, element := range s.service.Kline {
+		output = append(output, convertions.StringToFloat64(element.Close))
+	}
+	return output
+}
+
+
+func (s *Simulator) RawDataDatabaseETH() []float64 {
+	var output []float64
+	for _, element := range s.serviceETH.Kline {
+		output = append(output, convertions.StringToFloat64(element.Close))
+	}
+	return output
+}
+
+func (s *Simulator) RawDataDatabaseBTC() []float64 {
+	var output []float64
+	for _, element := range s.serviceBTC.Kline {
 		output = append(output, convertions.StringToFloat64(element.Close))
 	}
 	return output
