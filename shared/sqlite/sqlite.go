@@ -13,6 +13,7 @@ import (
 
 const (
 	FileExtention = "sqlite3"
+	path          = "../../../../"
 	// dateFormat    = "2006-01-02"
 )
 
@@ -30,7 +31,7 @@ func getDatabaseNameFile() string {
 	// t := time.Now().UTC()
 	// s2 := t.Format(dateFormat)
 
-	database := fmt.Sprintf("%s_v%s.%s", dataBaseName, databaseVersion, FileExtention)
+	database := fmt.Sprintf("%s%s_v%s.%s", path, dataBaseName, databaseVersion, FileExtention)
 
 	return database
 }
