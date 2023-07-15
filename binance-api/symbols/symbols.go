@@ -16,10 +16,14 @@ var (
 	BtcUsdt = &Symbols{Name: "btc_usdt", Value: "BTCUSDT"}
 	// MaticBusd POLYHON MATIC Value in BUSD
 	MaticBusd = &Symbols{Name: "matic_busd", Value: "MATICBUSD"}
+	// SolUsdt POLYHON MATIC Value in BUSD
+	SolUsdt = &Symbols{Name: "sol_usdt", Value: "SOLUSDT"}
+	// MaticUsdt POLYHON MATIC Value in USDT
+	MaticUsdt = &Symbols{Name: "matic_usdt", Value: "MATICUSDT"}
 	// BnbBusd  POLYHON MATIC Value in BUSD
 	BnbBusd = &Symbols{Name: "bnb_busd", Value: "BNBBUSD"}
-	// AdaBusd CARDANO Value in BUSD
-	AdaBusd = &Symbols{Name: "ada_busd", Value: "ADABUSD"}
+	// AdaUsdt CARDANO Value in USDT
+	AdaUsdt = &Symbols{Name: "ada_usdt", Value: "ADAUSDT"}
 	// BnbUsdt BNB Value in USDT
 	BnbUsdt = &Symbols{Name: "bnb_usdt", Value: "BNBUSDT"}
 )

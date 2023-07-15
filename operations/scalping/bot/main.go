@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/MauCastillo/alana/binance-api/symbols"
 	"github.com/MauCastillo/alana/operations/scalping/bot/utils"
@@ -10,42 +11,59 @@ import (
 	"github.com/MauCastillo/alana/shared/env"
 )
 
+const (
+	TableFormat   = "oscillator_strenght_%s"
+	limitKline    = 60
+	waitingPeriod = 15
+	periodSell    = 15
+	cycles        = 3
+)
+
 var (
-	index  = 0
-	inputs = []models.ExecutionParams{
-		{LimitKline: 60, WaitingPeriod: 1, PeriodSell: 1, Cycles: 2, Coin: *symbols.EthUsdt},
-		{LimitKline: 60, WaitingPeriod: 1, PeriodSell: 1, Cycles: 2, Coin: *symbols.BtcUsdt},
-		{LimitKline: 60, WaitingPeriod: 1, PeriodSell: 1, Cycles: 2, Coin: *symbols.BnbUsdt},
+	IsCreateTable = env.GetBool("CREATE_TABLE", false)
+	inputs        = []models.ExecutionParams{
+		{LimitKline: limitKline, WaitingPeriod: waitingPeriod, PeriodSell: periodSell, Cycles: cycles, Coin: *symbols.EthUsdt},
+		{LimitKline: limitKline, WaitingPeriod: waitingPeriod, PeriodSell: periodSell, Cycles: cycles, Coin: *symbols.BtcUsdt},
+		{LimitKline: limitKline, WaitingPeriod: waitingPeriod, PeriodSell: periodSell, Cycles: cycles, Coin: *symbols.BnbUsdt},
+		{LimitKline: limitKline, WaitingPeriod: waitingPeriod, PeriodSell: periodSell, Cycles: cycles, Coin: *symbols.AdaUsdt},
+		{LimitKline: limitKline, WaitingPeriod: waitingPeriod, PeriodSell: periodSell, Cycles: cycles, Coin: *symbols.SolUsdt},
+		{LimitKline: limitKline, WaitingPeriod: waitingPeriod, PeriodSell: periodSell, Cycles: cycles, Coin: *symbols.MaticUsdt},
 	}
 )
 
-const (
-	TableFormat = "oscillator_strenght_%s"
-)
-
-var (
-	IsCreateTable = env.GetBool("CREATE_TABLE", true)
-)
-
-func main() {
+func asyncFunction(s models.ExecutionParams) {
 	var tableName string
-	for _, s := range inputs {
-		if IsCreateTable {
-			tableName = fmt.Sprintf(TableFormat, s.Coin.Name)
-			fmt.Println("Creando Tablas => ", tableName)
-			err := database.Init(tableName)
-			if err != nil {
-				fmt.Println(err)
-			}
-		}
 
-		fmt.Println("Name coin: ", s.Coin.Name)
-		u, err := utils.RunCollector(&s.Coin, s.LimitKline, s.WaitingPeriod, s.Cycles, s.PeriodSell)
+	if IsCreateTable {
+		tableName = fmt.Sprintf(TableFormat, s.Coin.Name)
+		fmt.Println("Creando Tablas => ", tableName)
+		err := database.Init(tableName)
 		if err != nil {
 			fmt.Println(err)
 		}
-
-		fmt.Println(u)
-		index++
 	}
+
+	fmt.Println("=> Started collector to : ", s.Coin.Name)
+	_, err := utils.RunCollector(&s.Coin, s.LimitKline, s.WaitingPeriod, s.Cycles, s.PeriodSell)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println("=> Ended collector to : ", s.Coin.Name)
+
+}
+
+func main() {
+	var wg sync.WaitGroup
+
+	for _, s := range inputs {
+		wg.Add(1)
+		go func(index models.ExecutionParams) {
+			defer wg.Done()
+			asyncFunction(index)
+		}(s)
+	}
+
+	wg.Wait()
+	fmt.Println("Todas las funciones asíncronas han finalizado")
 }

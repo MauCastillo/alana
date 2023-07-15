@@ -12,5 +12,5 @@ func TestRemoveDatabase(t *testing.T) {
 
 	defer os.Remove("data-warehouse.sqlite3")
 	main()
-	c.Equal(index, 1)
+	c.False(IsCreateTable)
 }

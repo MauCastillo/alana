@@ -25,8 +25,3 @@ func TestBnbBusd(t *testing.T) {
 	c := require.New(t)
 	c.Equal("BNBBUSD", BnbBusd.Value)
 }
-
-func TestAdaBusd(t *testing.T) {
-	c := require.New(t)
-	c.Equal("ADABUSD", AdaBusd.Value)
-}

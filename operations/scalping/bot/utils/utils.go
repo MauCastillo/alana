@@ -53,7 +53,7 @@ func GetBestValue(s *simultor.Simulator, coin *symbols.Symbols, limitKline int, 
 	Good++
 
 	objetivePrice := 0.0
-	if simulation.ObjectivePrice() < s.GetPriceBuy() {
+	if simulation.ObjectivePrice() > s.GetPriceBuy() {
 		objetivePrice = simulation.ObjectivePrice()
 	}
 
@@ -68,7 +68,6 @@ func GetBestValue(s *simultor.Simulator, coin *symbols.Symbols, limitKline int, 
 func countdown(minute int) {
 	second := minute * 60
 	for i := second; i >= 0; i-- {
-		fmt.Printf("[Awating: %d Second] \n", i)
 		time.Sleep(time.Second)
 	}
 }
