@@ -13,14 +13,14 @@ import (
 
 const (
 	TableFormat   = "oscillator_strenght_%s"
-	limitKline    = 60
-	waitingPeriod = 15
-	periodSell    = 15
-	cycles        = 3
+	limitKline    = 120
+	waitingPeriod = 30
+	periodSell    = 30
+	cycles        = 192
 )
 
 var (
-	IsCreateTable = env.GetBool("CREATE_TABLE", false)
+	IsCreateTable = env.GetBool("CREATE_TABLE", true)
 	inputs        = []models.ExecutionParams{
 		{LimitKline: limitKline, WaitingPeriod: waitingPeriod, PeriodSell: periodSell, Cycles: cycles, Coin: *symbols.EthUsdt},
 		{LimitKline: limitKline, WaitingPeriod: waitingPeriod, PeriodSell: periodSell, Cycles: cycles, Coin: *symbols.BtcUsdt},
