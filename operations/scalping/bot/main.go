@@ -16,7 +16,7 @@ const (
 	limitKline    = 120
 	waitingPeriod = 30
 	periodSell    = 30
-	cycles        = 192
+	cycles        = 24
 )
 
 var (
