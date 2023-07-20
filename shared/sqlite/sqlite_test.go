@@ -29,6 +29,6 @@ func TestNewDatabase(t *testing.T) {
 		{FearAndGreedScore: float64(243.454), FearAndGreedPreviousClose: float64(456.126), SafeHavenDemandScore: rand.Float64() * 100},
 		{FearAndGreedScore: float64(23.564), FearAndGreedPreviousClose: float64(556.106), SafeHavenDemandScore: rand.Float64() * 100},
 	}
-	err = data.InsertOperations(tableName, rand.Float64()*10, op)
+	err = data.InsertOperations(tableName, rand.Float64()*10, rand.Float64()*10, op)
 	c.NoError(err)
 }
