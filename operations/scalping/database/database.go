@@ -6,7 +6,7 @@ import (
 	"github.com/MauCastillo/alana/shared/sqlite"
 )
 
-func SavewareHouse(simulation *simultor.Simulator, goodPrice float64, tableName string) error {
+func SavewareHouse(simulation *simultor.Simulator, goodPrice, hightPrice float64, tableName string) error {
 	op := models.Operation{
 		FearAndGreedScore:          simulation.FearAndGreedCNN.FearAndGreed.Score,
 		FearAndGreedPreviousClose:  simulation.FearAndGreedCNN.FearAndGreed.PreviousClose,
@@ -32,7 +32,7 @@ func SavewareHouse(simulation *simultor.Simulator, goodPrice float64, tableName 
 	}
 
 	listOp := []models.Operation{op}
-	err = database.InsertOperations(tableName, goodPrice, listOp)
+	err = database.InsertOperations(tableName, goodPrice, hightPrice, listOp)
 	if err != nil {
 		return err
 	}

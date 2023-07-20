@@ -49,7 +49,7 @@ func NewDatabase() (*DataBase, error) {
 
 func (d *DataBase) CreateNewTable(tableName string) error {
 	sts := `DROP TABLE IF EXISTS %s;
-		CREATE TABLE %s(id INTEGER PRIMARY KEY, operation TEXT, good_price float);`
+		CREATE TABLE %s(id INTEGER PRIMARY KEY, operation TEXT, good_price float, hight_price float);`
 
 	queryCreation := fmt.Sprintf(sts, tableName, tableName)
 
@@ -61,7 +61,7 @@ func (d *DataBase) CreateNewTable(tableName string) error {
 	return nil
 }
 
-func (d *DataBase) InsertOperations(tableName string, goodPrice float64, op []models.Operation) error {
+func (d *DataBase) InsertOperations(tableName string, goodPrice, hightPrice float64, op []models.Operation) error {
 	var queryInsert string
 	for _, operation := range op {
 		out, err := json.Marshal(operation)
@@ -69,7 +69,7 @@ func (d *DataBase) InsertOperations(tableName string, goodPrice float64, op []mo
 			continue
 		}
 
-		queryInsert += fmt.Sprintf("INSERT INTO %s(operation, good_price) VALUES('%s',%f);", tableName, string(out), goodPrice)
+		queryInsert += fmt.Sprintf("INSERT INTO %s(operation, good_price, hight_price) VALUES('%s',%f,%f);", tableName, string(out), goodPrice, hightPrice)
 	}
 
 	_, err := d.Database.Exec(queryInsert)

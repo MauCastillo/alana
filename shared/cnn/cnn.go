@@ -78,6 +78,7 @@ func Refresh() ([]byte, error) {
 
 func (f *FearAndGreedCNN) Get() *models.APIResponse {
 	now := time.Now()
+	
 	if lastTime != now.Format(timeFormatter) {
 		cnnResponse, err := requestCNNAPI()
 		if err != nil {

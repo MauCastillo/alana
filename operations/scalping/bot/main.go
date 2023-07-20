@@ -14,9 +14,9 @@ import (
 const (
 	TableFormat   = "oscillator_strenght_%s"
 	limitKline    = 120
-	waitingPeriod = 30
-	periodSell    = 30
-	cycles        = 24
+	waitingPeriod = 5
+	periodSell    = 5
+	cycles        = 4
 )
 
 var (
@@ -31,7 +31,7 @@ var (
 	}
 )
 
-func asyncFunction(s models.ExecutionParams) {
+func asyncFunction(s *models.ExecutionParams) {
 	var tableName string
 
 	if IsCreateTable {
@@ -58,10 +58,10 @@ func main() {
 
 	for _, s := range inputs {
 		wg.Add(1)
-		go func(index models.ExecutionParams) {
+		go func(index *models.ExecutionParams) {
 			defer wg.Done()
 			asyncFunction(index)
-		}(s)
+		}(&s)
 	}
 
 	wg.Wait()

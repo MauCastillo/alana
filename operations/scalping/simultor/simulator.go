@@ -92,6 +92,12 @@ func (s *Simulator) ObjectivePrice() float64 {
 	return (close + low) / 2
 }
 
+func (s *Simulator) BestPriceCoin() float64 {
+	bestOption := s.service.MaxValueClose()
+	
+	return convertions.StringToFloat64(bestOption.Close)
+}
+
 func FearAndGreed() *models.APIResponse {
 	request, err := cnn.NewFearAndGreedCNN()
 	if err != nil {

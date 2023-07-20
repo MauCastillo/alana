@@ -57,7 +57,7 @@ func GetBestValue(s *simultor.Simulator, coin *symbols.Symbols, limitKline int, 
 		objetivePrice = simulation.ObjectivePrice()
 	}
 
-	err = database.SavewareHouse(s, objetivePrice, tableName)
+	err = database.SavewareHouse(s, objetivePrice, simulation.BestPriceCoin(), tableName)
 	if err != nil {
 		return float64(0), nil
 	}
