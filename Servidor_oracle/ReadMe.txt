@@ -1,3 +1,0 @@
-CONN
-ssh -i ssh-key-2023-07-15.key ubuntu@129.80.135.169
-Token Github: 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

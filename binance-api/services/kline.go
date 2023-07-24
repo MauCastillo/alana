@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	apiKey      = env.GetString("API_KEY", "JCXUeiPBLpWo26x6CPFZ7TrQvIGHP9yw1GfcGjhNQW288U2YsWzWi8earWSoAyKB")
-	secretKey   = env.GetString("SECRET_KEY", "bx7O2inaH9UHVZVtnL6X9ckVViE8msQYYdn95nZC0DSc2XBmObI1PTisMHNzb6Fw")
+	apiKey      = env.GetString("API_KEY", "")
+	secretKey   = env.GetString("SECRET_KEY", "")
 	userTestNet = env.GetBool("USE_TEST_NET", false)
 )
 
