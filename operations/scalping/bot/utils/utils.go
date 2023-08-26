@@ -12,13 +12,10 @@ import (
 )
 
 var (
-	Good     = 0
-	Mistakes = 0
-	Neutral  = 0
-)
-
-const (
-	TableFormat = "oscillator_strenght_%s"
+	Good            = 0
+	Mistakes        = 0
+	Neutral         = 0
+	MinuteInSeconds = 60
 )
 
 type Util struct {
@@ -43,7 +40,7 @@ func Iterractor(coin *symbols.Symbols, limitKline int) (*simultor.Simulator, err
 	return simulation, err
 }
 
-func GetBestValue(s *simultor.Simulator, coin *symbols.Symbols, limitKline int, tableName string) (float64, error) {
+func GetBestValue(s *simultor.Simulator, coin *symbols.Symbols, limitKline int) (float64, error) {
 	simulation, err := simultor.NewSimulator(coin, *intervals.Minute, limitKline)
 	if err != nil {
 		Mistakes++
@@ -57,7 +54,7 @@ func GetBestValue(s *simultor.Simulator, coin *symbols.Symbols, limitKline int, 
 		objetivePrice = simulation.ObjectivePrice()
 	}
 
-	err = database.SavewareHouse(s, objetivePrice, simulation.BestPriceCoin(), tableName)
+	err = database.SavewareHouse(s, objetivePrice, simulation.BestPriceCoin())
 	if err != nil {
 		return float64(0), nil
 	}
@@ -66,14 +63,13 @@ func GetBestValue(s *simultor.Simulator, coin *symbols.Symbols, limitKline int, 
 }
 
 func countdown(minute int) {
-	second := minute * 60
+	second := minute * MinuteInSeconds
 	for i := second; i >= 0; i-- {
 		time.Sleep(time.Second)
 	}
 }
 
 func RunCollector(coin *symbols.Symbols, limitKline, waitingPeriod, cycles, periodSell int) (*Util, error) {
-	tableName := fmt.Sprintf(TableFormat, coin.Name)
 	earn := float64(0)
 
 	for i := 0; i < cycles; i++ {
@@ -83,7 +79,7 @@ func RunCollector(coin *symbols.Symbols, limitKline, waitingPeriod, cycles, peri
 		}
 
 		countdown(waitingPeriod)
-		best, err := GetBestValue(simulation, coin, periodSell, tableName)
+		best, err := GetBestValue(simulation, coin, periodSell)
 		if err != nil {
 			return nil, err
 		}

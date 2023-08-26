@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	// "time"
+	"time"
 
 	"github.com/MauCastillo/alana/operations/scalping/models"
 	"github.com/MauCastillo/alana/shared/env"
@@ -13,13 +13,13 @@ import (
 
 const (
 	FileExtention = "sqlite3"
-	//path          = "../../../../"
-	// dateFormat    = "2006-01-02"
+	// path          = "../../../../"
+	dateFormat = "2006-01-02"
 )
 
 var (
-	dataBaseName     = env.GetString("DATABASE_NAME", "data_warehouse")
-	databaseVersion  = env.GetString("VERSION", "01")
+	dataBaseName = env.GetString("DATABASE_NAME", "data_warehouse")
+	// databaseVersion  = env.GetString("VERSION", "01")
 	databaseFileName = getDatabaseNameFile()
 )
 
@@ -28,10 +28,10 @@ type DataBase struct {
 }
 
 func getDatabaseNameFile() string {
-	// t := time.Now().UTC()
-	// s2 := t.Format(dateFormat)
+	t := time.Now().UTC()
+	s2 := t.Format(dateFormat)
 
-	database := fmt.Sprintf("%s_v%s.%s", dataBaseName, databaseVersion, FileExtention)
+	database := fmt.Sprintf("%s_v%s.%s", dataBaseName, s2, FileExtention)
 
 	return database
 }
@@ -47,11 +47,24 @@ func NewDatabase() (*DataBase, error) {
 	return database, nil
 }
 
-func (d *DataBase) CreateNewTable(tableName string) error {
+func (d *DataBase) CreateNewTableForce(tableName string) error {
 	sts := `DROP TABLE IF EXISTS %s;
 		CREATE TABLE %s(id INTEGER PRIMARY KEY, operation TEXT, good_price float, hight_price float);`
 
 	queryCreation := fmt.Sprintf(sts, tableName, tableName)
+
+	_, err := d.Database.Exec(queryCreation)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (d *DataBase) CreateNewTable(tableName string) error {
+	sts := `CREATE TABLE IF NOT EXISTS %s(id INTEGER PRIMARY KEY, operation TEXT, good_price float, hight_price float);`
+
+	queryCreation := fmt.Sprintf(sts, tableName)
 
 	_, err := d.Database.Exec(queryCreation)
 	if err != nil {

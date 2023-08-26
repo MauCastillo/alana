@@ -1,12 +1,20 @@
 package database
 
 import (
+	"fmt"
+
 	"github.com/MauCastillo/alana/operations/scalping/models"
 	"github.com/MauCastillo/alana/operations/scalping/simultor"
+	"github.com/MauCastillo/alana/shared/env"
 	"github.com/MauCastillo/alana/shared/sqlite"
 )
 
-func SavewareHouse(simulation *simultor.Simulator, goodPrice, hightPrice float64, tableName string) error {
+var (
+	IsCreateTable = env.GetBool("CREATE_TABLE", true)
+	TableFormat   = env.GetString("TABLE_NAME_FORMAT", "coinmarket_image_%s")
+)
+
+func SavewareHouse(simulation *simultor.Simulator, goodPrice, hightPrice float64) error {
 	op := models.Operation{
 		FearAndGreedScore:          simulation.FearAndGreedCNN.FearAndGreed.Score,
 		FearAndGreedPreviousClose:  simulation.FearAndGreedCNN.FearAndGreed.PreviousClose,
@@ -31,6 +39,8 @@ func SavewareHouse(simulation *simultor.Simulator, goodPrice, hightPrice float64
 		return err
 	}
 
+	tableName := fmt.Sprintf(TableFormat, simulation.Symbol.Name)
+
 	listOp := []models.Operation{op}
 	err = database.InsertOperations(tableName, goodPrice, hightPrice, listOp)
 	if err != nil {
@@ -46,7 +56,20 @@ func Init(tableName string) error {
 		return err
 	}
 
-	err = database.CreateNewTable(tableName)
+	if IsCreateTable {
+		err = database.CreateNewTable(tableName)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func CreateNewTable(table string) error {
+	tableName := fmt.Sprintf(TableFormat, table)
+
+	err := Init(tableName)
 	if err != nil {
 		return err
 	}

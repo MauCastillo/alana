@@ -24,7 +24,7 @@ func TestSavewareHouse(t *testing.T) {
 	simulation, err := simultor.NewSimulator(coin, *intervals.Minute, 60)
 	c.NoError(err)
 
-	err = SavewareHouse(simulation, float64(123), float64(33),tableName)
+	err = SavewareHouse(simulation, float64(123), float64(33))
 	c.NoError(err)
 
 	db, err := sql.Open("sqlite3", file)
