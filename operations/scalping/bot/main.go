@@ -17,10 +17,10 @@ const(
 )
 
 var (
-	limitKline    = int(env.GetInt64("LIMIT_KLINE", 60))
+	limitKline    = int(env.GetInt64("LIMIT_KLINE", 6))
 	waitingPeriod = int(env.GetInt64("WAITING_PERIOD", 1))
 	periodSell    = waitingPeriod
-	cycles        = int(env.GetInt64("CYCLES", 18))
+	cycles        = int(env.GetInt64("CYCLES", 1))
 
 	inputs = []models.ExecutionParams{
 		{LimitKline: limitKline, WaitingPeriod: waitingPeriod, PeriodSell: periodSell, Cycles: cycles, Coin: *symbols.EthUsdt},

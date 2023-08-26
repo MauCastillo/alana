@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/MauCastillo/alana/operations/scalping/models"
 	"github.com/MauCastillo/alana/shared/env"
@@ -13,13 +12,11 @@ import (
 
 const (
 	FileExtention = "sqlite3"
-	// path          = "../../../../"
-	dateFormat = "2006-01-02"
 )
 
 var (
-	dataBaseName = env.GetString("DATABASE_NAME", "data_warehouse")
-	// databaseVersion  = env.GetString("VERSION", "01")
+	dataBaseName     = env.GetString("DATABASE_NAME", "data_warehouse")
+	databaseVersion  = env.GetString("VERSION_DATABASE", "local")
 	databaseFileName = getDatabaseNameFile()
 )
 
@@ -28,10 +25,7 @@ type DataBase struct {
 }
 
 func getDatabaseNameFile() string {
-	t := time.Now().UTC()
-	s2 := t.Format(dateFormat)
-
-	database := fmt.Sprintf("%s_v%s.%s", dataBaseName, s2, FileExtention)
+	database := fmt.Sprintf("%s_%s.%s", dataBaseName, databaseVersion, FileExtention)
 
 	return database
 }

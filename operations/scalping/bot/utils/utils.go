@@ -15,7 +15,7 @@ var (
 	Good            = 0
 	Mistakes        = 0
 	Neutral         = 0
-	MinuteInSeconds = 60
+	MinuteInSeconds = 1
 )
 
 type Util struct {
