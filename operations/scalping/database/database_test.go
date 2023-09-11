@@ -1,9 +1,6 @@
 package database
 
 import (
-	"database/sql"
-	"fmt"
-	"os"
 	"testing"
 
 	"github.com/MauCastillo/alana/binance-api/intervals"
@@ -18,30 +15,10 @@ func TestSavewareHouse(t *testing.T) {
 	const file string = "data-warehouse.sqlite3"
 	const tableName = "basic_training"
 
-	defer os.Remove(file)
-
 	coin := symbols.BtcBusd
 	simulation, err := simultor.NewSimulator(coin, *intervals.Minute, 60)
 	c.NoError(err)
 
-	err = SavewareHouse(simulation, float64(123), float64(33))
+	err = SavewareHouse(symbols.AdaUsdt, simulation, float64(123), float64(33))
 	c.NoError(err)
-
-	db, err := sql.Open("sqlite3", file)
-	c.NoError(err)
-
-	querySelect := fmt.Sprintf("SELECT * FROM %s", tableName)
-	rows, err := db.Query(querySelect)
-	c.NoError(err)
-
-	var uid int
-	var operation string
-	var goodPrice float64
-
-	rows.Next()
-	err = rows.Scan(&uid, &operation, &goodPrice)
-	c.NoError(err)
-
-	c.Equal(goodPrice, float64(123))
-
 }

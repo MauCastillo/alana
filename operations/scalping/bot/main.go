@@ -7,12 +7,11 @@ import (
 
 	"github.com/MauCastillo/alana/binance-api/symbols"
 	"github.com/MauCastillo/alana/operations/scalping/bot/utils"
-	"github.com/MauCastillo/alana/operations/scalping/database"
 	"github.com/MauCastillo/alana/operations/scalping/models"
 	"github.com/MauCastillo/alana/shared/env"
-	
 )
-const(
+
+const (
 	dateFormat = "January 02, 2006  15:04:05"
 )
 
@@ -20,7 +19,9 @@ var (
 	limitKline    = int(env.GetInt64("LIMIT_KLINE", 6))
 	waitingPeriod = int(env.GetInt64("WAITING_PERIOD", 1))
 	periodSell    = waitingPeriod
-	cycles        = int(env.GetInt64("CYCLES", 1))
+	cycles        = int(env.GetInt64("CYCLES", 4))
+
+	wg sync.WaitGroup
 
 	inputs = []models.ExecutionParams{
 		{LimitKline: limitKline, WaitingPeriod: waitingPeriod, PeriodSell: periodSell, Cycles: cycles, Coin: *symbols.EthUsdt},
@@ -33,7 +34,7 @@ var (
 )
 
 func collector(s models.ExecutionParams) {
-
+	defer wg.Done()
 	fmt.Println("=> Started collector to : ", s.Coin.Name)
 	_, err := utils.RunCollector(&s.Coin, s.LimitKline, s.WaitingPeriod, s.Cycles, s.PeriodSell)
 	if err != nil {
@@ -46,21 +47,15 @@ func collector(s models.ExecutionParams) {
 
 func main() {
 	start := time.Now()
-
-	var wg sync.WaitGroup
-
 	for _, s := range inputs {
-		err := database.CreateNewTable(s.Coin.Name)
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-
 		wg.Add(1)
 		go func(index models.ExecutionParams) {
-			defer wg.Done()
 			collector(index)
 		}(s)
+
+		fmt.Println("________________")
+		fmt.Println(s)
+		fmt.Print("....Llamando......")
 	}
 
 	wg.Wait()

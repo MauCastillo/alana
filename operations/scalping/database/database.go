@@ -2,20 +2,31 @@ package database
 
 import (
 	"fmt"
+	"time"
 
+	"github.com/MauCastillo/alana/binance-api/symbols"
 	"github.com/MauCastillo/alana/operations/scalping/models"
 	"github.com/MauCastillo/alana/operations/scalping/simultor"
-	"github.com/MauCastillo/alana/shared/env"
-	"github.com/MauCastillo/alana/shared/sqlite"
+	"github.com/MauCastillo/alana/shared/dynamodb"
+)
+
+const (
+	dateFormat = "2006-01-02 15:04:05"
 )
 
 var (
-	IsCreateTable = env.GetBool("CREATE_TABLE", true)
-	TableFormat   = env.GetString("TABLE_NAME_FORMAT", "coinmarket_image_%s")
+	databaseDynamoDB = dynamodb.NewDynamoDB()
 )
 
-func SavewareHouse(simulation *simultor.Simulator, goodPrice, hightPrice float64) error {
+func SavewareHouse(coin *symbols.Symbols, simulation *simultor.Simulator, goodPrice, hightPrice float64) error {
+	now := time.Now().UTC()
+	formatted := now.Format(dateFormat)
+
 	op := models.Operation{
+		Pass:                       fmt.Sprintf("%s_%s", coin.Name, formatted),
+		Name:                       coin.Name,
+		Date:                       formatted,
+		Coin:                       *coin,
 		FearAndGreedScore:          simulation.FearAndGreedCNN.FearAndGreed.Score,
 		FearAndGreedPreviousClose:  simulation.FearAndGreedCNN.FearAndGreed.PreviousClose,
 		FearAndGreedPrevious1Month: simulation.FearAndGreedCNN.FearAndGreed.Previous1Month,
@@ -32,47 +43,9 @@ func SavewareHouse(simulation *simultor.Simulator, goodPrice, hightPrice float64
 		MarketInfoBTC:              simulation.RawDataDatabaseBTC(),
 		MarketInfoETH:              simulation.RawDataDatabaseETH(),
 		Status:                     goodPrice > 0,
+		GoodPrice:                  goodPrice,
+		HightPrice:                 hightPrice,
 	}
 
-	database, err := sqlite.NewDatabase()
-	if err != nil {
-		return err
-	}
-
-	tableName := fmt.Sprintf(TableFormat, simulation.Symbol.Name)
-
-	listOp := []models.Operation{op}
-	err = database.InsertOperations(tableName, goodPrice, hightPrice, listOp)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func Init(tableName string) error {
-	database, err := sqlite.NewDatabase()
-	if err != nil {
-		return err
-	}
-
-	if IsCreateTable {
-		err = database.CreateNewTable(tableName)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func CreateNewTable(table string) error {
-	tableName := fmt.Sprintf(TableFormat, table)
-
-	err := Init(tableName)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return databaseDynamoDB.SaveRow(op)
 }

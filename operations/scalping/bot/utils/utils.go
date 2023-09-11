@@ -15,7 +15,10 @@ var (
 	Good            = 0
 	Mistakes        = 0
 	Neutral         = 0
-	MinuteInSeconds = 1
+)
+
+const (
+	MinuteInSeconds = 60
 )
 
 type Util struct {
@@ -54,10 +57,12 @@ func GetBestValue(s *simultor.Simulator, coin *symbols.Symbols, limitKline int) 
 		objetivePrice = simulation.ObjectivePrice()
 	}
 
-	err = database.SavewareHouse(s, objetivePrice, simulation.BestPriceCoin())
+	err = database.SavewareHouse(coin, s, objetivePrice, simulation.BestPriceCoin())
 	if err != nil {
 		return float64(0), nil
 	}
+	fmt.Println(coin.Name)
+	fmt.Println("============================= Guardando en Dynamodb ==============================")
 
 	return simulation.ObjectivePrice(), nil
 }
