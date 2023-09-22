@@ -1,60 +1,32 @@
-import tensorflow as tf
+import sys
 import numpy as np
-import matplotlib.pyplot as plt
+from database.dynamodb import Dynamodb
+from neuronal_network.training import Neuronal
+
+
+def load_information_dynamodb():
+
+    database = Dynamodb("market-collector", "eth_usdt")
+    data_training = database.get_data()
+
+    if len(data_training) == 0:
+        print("Datos de entrenamiento Vacios!!!!")
+        return
 
 
 
-def converCelsiusToFahrenheit(celsius):
-    return celsius * 1.8 + 32
+    input = data_training["input"]
+    target = data_training["target"]
+    input_size = len(data_training["input"][0])
+    
 
 
-newCelsius = []
-newFahrenheit = []
-for i in range(500):
-    newCelsius.append(i)
-    newFahrenheit.append(converCelsiusToFahrenheit(i))
-    #output = "C = %s \n F = %s" % (i, converCelsiusToFahrenheit(i))
-    #print(output)
+    ai = Neuronal(input_size, input, target)
+    ai.Training()
+
+def main():
+   load_information_dynamodb()
 
 
-
-num_samples = 1000
-input_data = np.random.rand(num_samples, 1)
-#input_data = np.random.randint(100,size=10)
-for value in input_data:
-    print("[%s]" % (value))
-addVector = np.vectorize(converCelsiusToFahrenheit)
-target_data = addVector(input_data)
-for value in target_data:
-    print(">>> %s => <<<" % (value))
-
-#target_data = np.sum(input_data, axis=1)
-
-celsius = np.array(input_data, dtype=float)
-fahrenheit = np.array(target_data, dtype=float)
-
-#layer = tf.keras.layers.Dense(units=1, input_shape=[1])
-layer = tf.keras.layers.Dense(units=10, input_shape=[1])
-hidde = tf.keras.layers.Dense(units=10)
-hidde2 = tf.keras.layers.Dense(units=10)
-output = tf.keras.layers.Dense(units=1)
-
-model = tf.keras.Sequential([layer, hidde,hidde2, output])
-
-model.compile(
-    optimizer=tf.keras.optimizers.Adam(0.1),
-    loss='mean_squared_error'
-)
-
-print("Staring training")
-history = model.fit(celsius,fahrenheit,epochs=1000, verbose=False)
-print("Finished the training!")
-
-plt.xlabel("# Epoca")
-plt.ylabel("Magnitud de perdida")
-
-plt.plot(history.history["loss"])
-resultado = model.predict([[100], [0.0]])
-print("Resultado",resultado)
-#print(layer.get_weights())
-plt.show() 
+if __name__ == "__main__":
+    sys.exit(main())
