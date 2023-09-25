@@ -26,7 +26,6 @@ func SavewareHouse(coin *symbols.Symbols, simulation *simultor.Simulator, goodPr
 		Pass:                       fmt.Sprintf("%s_%s", coin.Name, formatted),
 		Name:                       coin.Name,
 		Date:                       formatted,
-		Coin:                       *coin,
 		FearAndGreedScore:          simulation.FearAndGreedCNN.FearAndGreed.Score,
 		FearAndGreedPreviousClose:  simulation.FearAndGreedCNN.FearAndGreed.PreviousClose,
 		FearAndGreedPrevious1Month: simulation.FearAndGreedCNN.FearAndGreed.Previous1Month,
@@ -38,6 +37,7 @@ func SavewareHouse(coin *symbols.Symbols, simulation *simultor.Simulator, goodPr
 		PriceBuy:                   simulation.GetPriceBuy(),
 		MarketInfo:                 simulation.RawDataDatabase(),
 		MarketInfoBTC:              simulation.RawDataDatabaseBTC(),
+		GoodPrice:                  goodPrice,
 		Status:                     goodPrice > 0,
 	}
 

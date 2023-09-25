@@ -68,7 +68,11 @@ func TestGetTrendsRealTime(t *testing.T) {
 	realtime, err := GetTrendsRealTime(ctx, "EN", "US", "b")
 	c.NoError(err)
 
-	c.Equal(realtime[0].Title, "all")
+	c.Equal(realtime[0].Title, "S&P Global Ratings, S&P Global, China, Asia–Pacific, Forecasting, Philippines")
+
+	daley, err := GetTrendsDebugs(ctx, "EN", "US", "b")
+	c.Equal(realtime[0].Title, daley)
+	c.NoError(err)
 }
 
 func TestGetSearch(t *testing.T) {

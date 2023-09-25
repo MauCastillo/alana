@@ -2,8 +2,8 @@ package trends
 
 import (
 	"context"
+	"fmt"
 
-	// "github.com/MauCastillo/alana/shared/google/trends"
 	"github.com/groovili/gogtrends"
 )
 
@@ -50,6 +50,28 @@ func GetTrendsRealTime(ctx context.Context, lenguage, localitation, category str
 	if err != nil {
 		return nil, err
 	}
+
+	return realtime, nil
+}
+
+
+func GetTrendsDebugs(ctx context.Context, lenguage, localitation, category string) ([]*gogtrends.TrendingStory, error) {
+	gogtrends.Debug(false)
+
+	realtime, err := gogtrends.Realtime(ctx, lenguage, localitation, category)
+	if err != nil {
+		return nil, err
+	}
+
+	daily, err := gogtrends.Daily(ctx, lenguage, localitation)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Print(daily)
+
+
+
 
 	return realtime, nil
 }
