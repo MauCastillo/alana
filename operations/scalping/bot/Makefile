@@ -8,12 +8,8 @@ build:
 	cp -b $(BUILD_NAME_MAIN)  ../../../build/principal/
 	rm -f $(BUILD_NAME_MAIN) 
 
-build_arm:
-	export CC=aarch64-linux-gnu-gcc
-	export GOARCH=arm64
-	export GOOS=linux
-	
-	CGO_ENABLED=1 GOOS=linux GOARCH=arm64 CC=aarch64-linux-gnu-gcc go build -o $(BUILD_ARM_NAME_MAIN) main.go
+build_arm:	
+	GOOS=linux GOARCH=arm go build -o $(BUILD_ARM_NAME_MAIN) main.go
 	# cp -b $(BUILD_ARM_NAME_MAIN)  ../../../build/arm/
 	# rm -f $(BUILD_ARM_NAME_MAIN) 
 

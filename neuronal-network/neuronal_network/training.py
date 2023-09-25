@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 
 
 class Neuronal:
-    LAYER_SIZE = 132
-    EPOCHS = 50
+    HIDDE_LAYERs_SIZE = 3
+    EPOCHS = 20
     MODEL_NAME = "model_backup.h5"
 
     def __init__(self, input_size, input, output):
@@ -17,18 +17,24 @@ class Neuronal:
         input_formatter = np.array(self.input_data, dtype=float)
         output_formatter = np.array(self.target_data, dtype=float)
 
-        print(">>> input_formatter: ",input_formatter[0])
+        print(">>> input_formatter: ", input_formatter[0])
 
-        layer = tf.keras.layers.Dense(
-            units=self.LAYER_SIZE, input_shape=[self.input_size])
-        hidde = tf.keras.layers.Dense(units=self.LAYER_SIZE, activation='relu')
-        hidde2 = tf.keras.layers.Dense(units=self.LAYER_SIZE, activation='relu')
-        hidde3 = tf.keras.layers.Dense(units=self.LAYER_SIZE, activation='relu')
-        hidde4 = tf.keras.layers.Dense(units=self.LAYER_SIZE, activation='relu')
-        hidde5 = tf.keras.layers.Dense(units=self.LAYER_SIZE, activation='relu')
-        output = tf.keras.layers.Dense(units=1)
+        layers = []
 
-        model = tf.keras.Sequential([layer, hidde, hidde2, hidde3, hidde4, hidde5,  output])
+        intput_layer = tf.keras.layers.Dense(
+            units=self.input_size, input_shape=[self.input_size])
+        layers.append(intput_layer)
+
+        for _ in range(self.HIDDE_LAYERs_SIZE):
+            hidde = tf.keras.layers.Dense(units=self.input_size, activation='relu')
+            layers.append(hidde)
+
+       
+
+        output_layer = tf.keras.layers.Dense(units=1, activation='linear')
+        layers.append(output_layer)
+
+        model = tf.keras.Sequential(layers)
 
         model.compile(
             optimizer=tf.keras.optimizers.Adam(0.1),
