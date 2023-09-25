@@ -76,7 +76,7 @@ type APIResponse struct {
 	} `json:"put_call_options"`
 	MarketVolatilityVix struct {
 		Timestamp float64 `json:"timestamp"`
-		Score     int     `json:"score"`
+		Score     float64    `json:"score"`
 		Rating    string  `json:"rating"`
 		Data      []struct {
 			X      float64 `json:"x"`
@@ -86,7 +86,7 @@ type APIResponse struct {
 	} `json:"market_volatility_vix"`
 	MarketVolatilityVix50 struct {
 		Timestamp float64 `json:"timestamp"`
-		Score     int     `json:"score"`
+		Score     float64     `json:"score"`
 		Rating    string  `json:"rating"`
 		Data      []struct {
 			X      float64 `json:"x"`

@@ -16,6 +16,7 @@ import (
 
 var (
 	periodStochasticOscillator = env.GetInt64("PERIOD_STOCHASTIS_OSCILLATOR", 3)
+	expectedProfit             = env.GetFloat64("PROFIT", float64(0.15))
 )
 
 type Simulator struct {
@@ -84,17 +85,28 @@ func (s *Simulator) CurrentPrice() *binance.SymbolPrice {
 	return price
 }
 
-func (s *Simulator) ObjectivePrice() float64 {
+func (s *Simulator) ObjectivePrice(priceBuy float64) float64 {
+	profit := priceBuy * expectedProfit
+
+	goodProfit := priceBuy + profit
+
+
 	bestOption := s.service.MaxValueClose()
 	close := convertions.StringToFloat64(bestOption.Close)
 	low := convertions.StringToFloat64(bestOption.Low)
 
-	return (close + low) / 2
+	avgPrice :=  (close + low) / 2
+
+	if avgPrice < goodProfit{
+		return 0
+	}
+
+	return goodProfit
 }
 
 func (s *Simulator) BestPriceCoin() float64 {
 	bestOption := s.service.MaxValueClose()
-	
+
 	return convertions.StringToFloat64(bestOption.Close)
 }
 
@@ -116,7 +128,6 @@ func (s *Simulator) RawDataDatabase() []float64 {
 	}
 	return output
 }
-
 
 func (s *Simulator) RawDataDatabaseETH() []float64 {
 	var output []float64

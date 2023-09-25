@@ -12,9 +12,9 @@ import (
 )
 
 var (
-	Good            = 0
-	Mistakes        = 0
-	Neutral         = 0
+	Good     = 0
+	Mistakes = 0
+	Neutral  = 0
 )
 
 const (
@@ -52,19 +52,18 @@ func GetBestValue(s *simultor.Simulator, coin *symbols.Symbols, limitKline int) 
 
 	Good++
 
-	objetivePrice := 0.0
-	if simulation.ObjectivePrice() > s.GetPriceBuy() {
-		objetivePrice = simulation.ObjectivePrice()
-	}
+	goodPrice := 0.0
 
-	err = database.SavewareHouse(coin, s, objetivePrice, simulation.BestPriceCoin())
+	goodPrice = simulation.ObjectivePrice(s.GetPriceBuy())
+
+	err = database.SavewareHouse(coin, s, goodPrice, simulation.BestPriceCoin())
 	if err != nil {
 		return float64(0), nil
 	}
 	fmt.Println(coin.Name)
-	fmt.Println("============================= Guardando en Dynamodb ==============================")
+	fmt.Println("======= Guardando en Dynamodb ========")
 
-	return simulation.ObjectivePrice(), nil
+	return simulation.ObjectivePrice(s.GetPriceBuy()), nil
 }
 
 func countdown(minute int) {

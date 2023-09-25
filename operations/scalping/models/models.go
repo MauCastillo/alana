@@ -19,13 +19,9 @@ type Operation struct {
 	MarketMomentumSp125Score   float64         `json:"market_momentum_sp125_score"`
 	MarketMomentumSp500Score   float64         `json:"market_momentum_sp500_score"`
 	PriceBuy                   float64         `json:"price_buy"`
-	RelativeStrenghtIndex      float64         `json:"relative_strenght_index"`
 	SafeHavenDemandScore       float64         `json:"safe_haven_demand_score"`
-	StochasticOscillatorK      float64         `json:"stochastic_oscillator_k"`
-	StochasticOscillatorD      float64         `json:"stochastic_oscillator_d"`
 	MarketInfo                 []float64       `json:"market_info"`
 	MarketInfoBTC              []float64       `json:"market_info_btc"`
-	MarketInfoETH              []float64       `json:"market_info_eth"`
 	Status                     bool            `json:"status"`
 }
 

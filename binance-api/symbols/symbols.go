@@ -22,8 +22,10 @@ var (
 	MaticUsdt = &Symbols{Name: "matic_usdt", Value: "MATICUSDT"}
 	// BnbBusd  POLYHON MATIC Value in BUSD
 	BnbBusd = &Symbols{Name: "bnb_busd", Value: "BNBBUSD"}
-	// AdaUsdt CARDANO Value in USDT
-	AdaUsdt = &Symbols{Name: "ada_usdt", Value: "ADAUSDT"}
+	// DotUsdt Polkadot Value in USDT
+	DotUsdt = &Symbols{Name: "dot_usdt", Value: "DOTUSDT"}
 	// BnbUsdt BNB Value in USDT
 	BnbUsdt = &Symbols{Name: "bnb_usdt", Value: "BNBUSDT"}
+	// AvaxUsdt Avalanche Value in USDT
+	AvaxUsdt = &Symbols{Name: "avax_usdt", Value: "AVAXUSDT"}
 )
