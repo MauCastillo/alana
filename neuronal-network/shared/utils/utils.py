@@ -75,8 +75,12 @@ class Utils:
             record["market_info_btc"]))
 
         self.input_data.append(output)
-        self.target_data = np.append(
-            self.target_data, self.string_bool_to_int(record["status"]['BOOL']))
+
+
+        self.target_data = np.append(self.target_data, self.parse_float(record["good_price"]["N"]))
+
+        # Estes estado podria ser util en un futuro
+        # self.target_data = np.append(self.target_data, self.string_bool_to_int(record["status"]['BOOL']))
 
         return output
     
@@ -89,13 +93,19 @@ class Utils:
 
     def get_training_data_unique(self, coin):
         database = Dynamodb(self.Table, coin)
+        data_rows = database.read_table_filter()
+
+        for record in data_rows:
+            self.unique_array(record)
+
+        return {"inputs": self.input_data, "target": self.target_data}
+    
+
+    def get_training_data_all(self):
+        database = Dynamodb(self.Table,"")
         data_rows = database.read_table_raw()
 
         for record in data_rows:
             self.unique_array(record)
 
-        print("input: ", len(self.input_data))
-        print("input: ", self.input_data[5])
-        print("target: ", self.target_data)
-
-        return {"input": self.input_data, "target": self.target_data}
+        return {"inputs": self.input_data, "target": self.target_data}

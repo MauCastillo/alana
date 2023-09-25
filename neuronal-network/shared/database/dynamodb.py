@@ -2,7 +2,6 @@ import boto3
 import numpy as np
 
 
-
 class Dynamodb:
     FLOAT_PRECISION = 2
     input_data = []
@@ -12,7 +11,7 @@ class Dynamodb:
         self.Table = table
         self.Pair = pair
 
-    def read_table_raw(self):
+    def read_table_filter(self):
         dynamodb = boto3.client('dynamodb')
         filter_expression = '#name = :value'
         expression_attribute_names = {'#name': 'name'}
@@ -25,5 +24,12 @@ class Dynamodb:
             ExpressionAttributeNames=expression_attribute_names,
             ExpressionAttributeValues=expression_attribute_values
         )
+
+        return response['Items']
+
+    def read_table_raw(self):
+        dynamodb = boto3.client('dynamodb')
+
+        response = dynamodb.scan(TableName=self.Table)
 
         return response['Items']

@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 
 
 class Neuronal:
-    HIDDE_LAYERs_SIZE = 6
-    EPOCHS = 10
+    HIDDE_LAYERS_SIZE = 6
+    EPOCHS = 20
     MODEL_NAME = "storage_models/model_backup_%s.h5"
 
     def __init__(self, input_size, input, target, coin_name):
@@ -16,9 +16,9 @@ class Neuronal:
 
     def Training(self):
         input_formatter = np.array(self.input_data, dtype=float)
-        output_formatter = np.array(self.target_data, dtype=float)
+        target_formatter = np.array(self.target_data, dtype=float)
 
-        print(">>> input_formatter: ", input_formatter[0])
+        print(">>> target: ", target_formatter)
 
         layers = []
 
@@ -26,7 +26,7 @@ class Neuronal:
             units=self.input_size, input_shape=[self.input_size])
         layers.append(intput_layer)
 
-        for _ in range(self.HIDDE_LAYERs_SIZE):
+        for _ in range(self.HIDDE_LAYERS_SIZE):
             hidde = tf.keras.layers.Dense(units=self.input_size, activation='relu')
             layers.append(hidde)
 
@@ -47,7 +47,7 @@ class Neuronal:
         model.save(file_name)
 
         print("Staring training")
-        history = model.fit(input_formatter, output_formatter,
+        history = model.fit(input_formatter, target_formatter,
                             epochs=self.EPOCHS, verbose=False)
         print("Finished the training!")
 
