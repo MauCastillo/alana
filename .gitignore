@@ -20,6 +20,7 @@
 # Go workspace file
 go.work
 
+storage_models
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json

@@ -1,32 +1,15 @@
-import boto3
 import numpy as np
+from shared.database.dynamodb import Dynamodb
+from shared.models.models import COINS_INDEX
 
-
-class Dynamodb:
+class Utils:
     FLOAT_PRECISION = 2
     input_data = []
     target_data = []
 
-    def __init__(self, table, pair):
+    def __init__(self, table):
         self.Table = table
-        self.Pair = pair
-
-    def read_raw(self):
-        dynamodb = boto3.client('dynamodb')
-        filter_expression = '#name = :value'
-        expression_attribute_names = {'#name': 'name'}
-
-        expression_attribute_values = {':value': {'S': self.Pair}}
-
-        response = dynamodb.scan(
-            TableName=self.Table,
-            FilterExpression=filter_expression,
-            ExpressionAttributeNames=expression_attribute_names,
-            ExpressionAttributeValues=expression_attribute_values
-        )
-
-        return response['Items']
-
+    
     def parse_float(self, input_string):
         result_float = round(float(input_string), self.FLOAT_PRECISION)
         return result_float
@@ -42,6 +25,13 @@ class Dynamodb:
 
     def unique_array(self, record):
         output = np.array([], dtype=np.float)
+
+        coin_name = record["name"]["S"]
+
+        if coin_name in  COINS_INDEX:
+            output = np.append(output, COINS_INDEX[coin_name])
+        else:
+            output = np.append(output, 0)
 
         value = self.parse_float(record["fear_greed_previous_1_month"]["N"])
         output = np.append(output, value)
@@ -86,14 +76,22 @@ class Dynamodb:
 
         self.input_data.append(output)
         self.target_data = np.append(
-            self.target_data, self.parse_float(record["good_price"]["N"]))
+            self.target_data, self.string_bool_to_int(record["status"]['BOOL']))
 
         return output
+    
+    def string_bool_to_int(self, value):
+        if value:
+            return 1
+        
+        return 0
+    
 
-    def get_data(self):
-        data_row = self.read_raw()
+    def get_training_data_unique(self, coin):
+        database = Dynamodb(self.Table, coin)
+        data_rows = database.read_table_raw()
 
-        for record in data_row:
+        for record in data_rows:
             self.unique_array(record)
 
         print("input: ", len(self.input_data))

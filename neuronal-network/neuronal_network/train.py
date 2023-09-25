@@ -4,14 +4,15 @@ import matplotlib.pyplot as plt
 
 
 class Neuronal:
-    HIDDE_LAYERs_SIZE = 3
-    EPOCHS = 20
-    MODEL_NAME = "model_backup.h5"
+    HIDDE_LAYERs_SIZE = 6
+    EPOCHS = 10
+    MODEL_NAME = "storage_models/model_backup_%s.h5"
 
-    def __init__(self, input_size, input, output):
+    def __init__(self, input_size, input, target, coin_name):
         self.input_data = input
-        self.target_data = output
+        self.target_data = target
         self.input_size = input_size
+        self.coin_name = coin_name
 
     def Training(self):
         input_formatter = np.array(self.input_data, dtype=float)
@@ -42,7 +43,8 @@ class Neuronal:
         )
 
         # Guardar el Modelo
-        model.save(self.MODEL_NAME)
+        file_name = self.MODEL_NAME % self.coin_name
+        model.save(file_name)
 
         print("Staring training")
         history = model.fit(input_formatter, output_formatter,

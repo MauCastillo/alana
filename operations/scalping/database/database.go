@@ -35,16 +35,10 @@ func SavewareHouse(coin *symbols.Symbols, simulation *simultor.Simulator, goodPr
 		MarketMomentumSp125Score:   simulation.FearAndGreedCNN.MarketMomentumSp125.Score,
 		JunkBondDemandScore:        simulation.FearAndGreedCNN.JunkBondDemand.Score,
 		SafeHavenDemandScore:       simulation.FearAndGreedCNN.SafeHavenDemand.Score,
-		StochasticOscillatorK:      simulation.StochasticOscillatorK,
-		StochasticOscillatorD:      simulation.StochasticOscillatorD,
-		RelativeStrenghtIndex:      simulation.RelativeStrenghtIndex,
 		PriceBuy:                   simulation.GetPriceBuy(),
 		MarketInfo:                 simulation.RawDataDatabase(),
 		MarketInfoBTC:              simulation.RawDataDatabaseBTC(),
-		MarketInfoETH:              simulation.RawDataDatabaseETH(),
 		Status:                     goodPrice > 0,
-		GoodPrice:                  goodPrice,
-		HightPrice:                 hightPrice,
 	}
 
 	return databaseDynamoDB.SaveRow(op)
