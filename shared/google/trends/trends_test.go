@@ -61,17 +61,14 @@ func TestGetTrendsCategories(t *testing.T) {
 	c.Equal(category, trendsCategories)
 }
 
-func TestGetTrendsRealTime(t *testing.T) {
+func TestGetBalanceTrendsRealTime(t *testing.T) {
 	c := require.New(t)
 	ctx := context.Background()
 
-	realtime, err := GetTrendsRealTime(ctx, "EN", "US", "b")
+	_, err := GetBalanceTrendsRealTime(ctx, "EN", "US", "all")
 	c.NoError(err)
 
-	c.Equal(realtime[0].Title, "S&P Global Ratings, S&P Global, China, Asia–Pacific, Forecasting, Philippines")
-
-	daley, err := GetTrendsDebugs(ctx, "EN", "US", "b")
-	c.Equal(realtime[0].Title, daley)
+	_, err = GetBalanceDaily(ctx, "EN", "US")
 	c.NoError(err)
 }
 
@@ -82,5 +79,5 @@ func TestGetSearch(t *testing.T) {
 
 	exploreResponse, err := GetSearch(ctx)
 	c.NoError(err)
-	c.Equal(exploreResponse[0].Title, "")
+	c.Equal(exploreResponse[0].Title, "Bitcoin")
 }

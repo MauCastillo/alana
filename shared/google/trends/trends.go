@@ -2,9 +2,9 @@ package trends
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/groovili/gogtrends"
+	"github.com/MauCastillo/alana/shared/google/analizistrend"
 )
 
 func GetExplore(ctx context.Context) ([]*gogtrends.TrendingSearch, error) {
@@ -28,7 +28,7 @@ func GetExploreInput(ctx context.Context, inputs []*gogtrends.ComparisonItem) (*
 	compare, err := gogtrends.Explore(ctx,
 		&gogtrends.ExploreRequest{
 			ComparisonItems: inputs,
-			Category:        31, // Programming category
+			Category:        31,
 			Property:        "",
 		}, "EN")
 
@@ -45,33 +45,33 @@ func GetTrendsCategories() map[string]string {
 	return cats
 }
 
-func GetTrendsRealTime(ctx context.Context, lenguage, localitation, category string) ([]*gogtrends.TrendingStory, error) {
+func GetBalanceTrendsRealTime(ctx context.Context, lenguage, localitation, category string) (int, error) {
+	gogtrends.Debug(false)
 	realtime, err := gogtrends.Realtime(ctx, lenguage, localitation, category)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
-	return realtime, nil
+	analizis := analizistrend.NewAnalizisTrend()
+	balance := analizis.GetBalanceRealtime(realtime)
+
+	return balance, nil
 }
 
 
-func GetTrendsDebugs(ctx context.Context, lenguage, localitation, category string) ([]*gogtrends.TrendingStory, error) {
+func GetBalanceDaily(ctx context.Context, lenguage, localitation string) (int, error) {
 	gogtrends.Debug(false)
-
-	realtime, err := gogtrends.Realtime(ctx, lenguage, localitation, category)
-	if err != nil {
-		return nil, err
-	}
 
 	daily, err := gogtrends.Daily(ctx, lenguage, localitation)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
-	fmt.Print(daily)
+	analizis := analizistrend.NewAnalizisTrend()
+	balance := analizis.GetBalanceDaily(daily)
 
 
 
 
-	return realtime, nil
+	return int(balance), nil
 }
