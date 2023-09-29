@@ -119,3 +119,4 @@ func (a *AnalizisTrend) GetBalanceDaily(ctx context.Context, lenguage, localitat
 
 	return int(balance), nil
 }
+
