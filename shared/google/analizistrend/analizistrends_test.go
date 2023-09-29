@@ -14,7 +14,7 @@ func TestGetBalanceRealtime(t *testing.T) {
 
 	balance, err := analizis.GetBalanceTrendsRealTime(context.Background(), "EN", "US", "b")
 	c.NoError(err)
-	c.Equal(0, balance)
+	c.NotEqual(0, balance.Economic)
 
 }
 
@@ -25,5 +25,5 @@ func TestGetBalanceDaily(t *testing.T) {
 
 	balance, err := analizis.GetBalanceDaily(context.Background(), "EN", "US")
 	c.NoError(err)
-	c.Equal(0, balance)
+	c.NotEqual(0, balance.Economic)
 }

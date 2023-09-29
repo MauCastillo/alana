@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/MauCastillo/alana/operations/scalping/models"
 	"github.com/MauCastillo/alana/operations/scalping/simultor"
 	"github.com/MauCastillo/alana/shared/dynamodb"
+	"github.com/MauCastillo/alana/shared/google/analizistrend"
 )
 
 const (
@@ -21,6 +23,19 @@ var (
 func SavewareHouse(coin *symbols.Symbols, simulation *simultor.Simulator, goodPrice, hightPrice float64) error {
 	now := time.Now().UTC()
 	formatted := now.Format(dateFormat)
+
+	analizis := analizistrend.NewAnalizisTrend()
+
+	balanceEconomic := 0
+	balanceCryptocurrency := 0
+
+	balance, err := analizis.GetBalanceTrendsRealTime(context.Background(), "EN", "US", "b")
+	if err != nil {
+		print(err)
+	}
+
+	balanceCryptocurrency = balance.Cryptocurrency
+	balanceEconomic = balance.Economic
 
 	op := models.Operation{
 		Pass:                       fmt.Sprintf("%s_%s", coin.Name, formatted),
@@ -39,6 +54,8 @@ func SavewareHouse(coin *symbols.Symbols, simulation *simultor.Simulator, goodPr
 		MarketInfoBTC:              simulation.RawDataDatabaseBTC(),
 		GoodPrice:                  goodPrice,
 		Status:                     goodPrice > 0,
+		Economic:                   balanceEconomic,
+		Cryptocurrency:             balanceCryptocurrency,
 	}
 
 	return databaseDynamoDB.SaveRow(op)

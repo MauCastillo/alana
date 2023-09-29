@@ -3,11 +3,14 @@ package scraping
 import (
 	"regexp"
 	"strings"
+	"errors"
 
 	"github.com/gocolly/colly"
 )
 
 var (
+	// ErrorEmptyURL whe the input to find keyword is empty
+	ErrorEmptyURL = errors.New("url is empty")
 	htmlTags = regexp.MustCompile("<.*?>")
 )
 
@@ -17,6 +20,10 @@ type Report struct {
 }
 
 func NewReport(url string) (*Report, error) {
+	if url == ""{
+		return nil, ErrorEmptyURL
+	}
+
 	report := Report{URL: url}
 	err := report.scraper()
 	if err != nil {

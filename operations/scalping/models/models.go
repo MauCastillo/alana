@@ -23,6 +23,8 @@ type Operation struct {
 	MarketInfo                 []float64       `json:"market_info"`
 	MarketInfoBTC              []float64       `json:"market_info_btc"`
 	Status                     bool            `json:"status"`
+	Cryptocurrency             int             `json:"cryptocurrency_balance" bson:"cryptocurrency_balance"`
+	Economic                   int             `json:"economic_balance" bson:"economic_balance"`
 }
 
 type ExecutionParams struct {

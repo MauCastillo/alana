@@ -11,7 +11,10 @@ func TestScraping(t *testing.T) {
 
 	url := "https://www.openpr.com/news/3227327/coffee-substitutes-market-2023-industry-analysis-key"
 
-	report, err := NewReport(url)
+	report, err := NewReport("")
+	c.EqualError(err, ErrorEmptyURL.Error())
+
+	report, err = NewReport(url)
 	c.NoError(err)
 
 	c.Equal(url, report.URL)
