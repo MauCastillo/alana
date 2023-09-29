@@ -1,6 +1,7 @@
 package analizistrend
 
 import (
+	"context"
 	"strings"
 
 	"github.com/MauCastillo/alana/shared/google/keywords"
@@ -18,26 +19,22 @@ func NewAnalizisTrend() *AnalizisTrend {
 	return &AnalizisTrend{}
 }
 
-func (a *AnalizisTrend) GetBalanceDaily(trendingSearch []*gogtrends.TrendingSearch) int {
+func getBalanceDaily(trendingSearch []*gogtrends.TrendingSearch) int {
 	balance := 0
 
 	for _, trends := range trendingSearch {
 		balance += balaceSearchArticles(trends.Articles)
 	}
 
-	a.DailyBalance = balance
-
 	return balance
 }
 
-func (a *AnalizisTrend) GetBalanceRealtime(realtime []*gogtrends.TrendingStory) int {
+func getBalanceRealtime(realtime []*gogtrends.TrendingStory) int {
 	balance := 0
 
 	for _, trends := range realtime {
 		balance += balaceTrendingArticles(trends.Articles)
 	}
-
-	a.RealtimeBalance = balance
 
 	return balance
 }
@@ -94,4 +91,31 @@ func PositiveEconomyKeywords(title string) int {
 	}
 
 	return 0
+}
+
+func (a *AnalizisTrend) GetBalanceTrendsRealTime(ctx context.Context, lenguage, localitation, category string) (int, error) {
+	gogtrends.Debug(false)
+	realtime, err := gogtrends.Realtime(ctx, lenguage, localitation, category)
+	if err != nil {
+		return 0, err
+	}
+
+	balance := getBalanceRealtime(realtime)
+	a.NegativeDailyBalance = balance
+
+	return balance, nil
+}
+
+func (a *AnalizisTrend) GetBalanceDaily(ctx context.Context, lenguage, localitation string) (int, error) {
+	gogtrends.Debug(false)
+
+	daily, err := gogtrends.Daily(ctx, lenguage, localitation)
+	if err != nil {
+		return 0, err
+	}
+
+	balance := getBalanceDaily(daily)
+	a.DailyBalance = balance
+
+	return int(balance), nil
 }

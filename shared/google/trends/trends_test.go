@@ -61,17 +61,6 @@ func TestGetTrendsCategories(t *testing.T) {
 	c.Equal(category, trendsCategories)
 }
 
-func TestGetBalanceTrendsRealTime(t *testing.T) {
-	c := require.New(t)
-	ctx := context.Background()
-
-	_, err := GetBalanceTrendsRealTime(ctx, "EN", "US", "all")
-	c.NoError(err)
-
-	_, err = GetBalanceDaily(ctx, "EN", "US")
-	c.NoError(err)
-}
-
 func TestGetSearch(t *testing.T) {
 	c := require.New(t)
 

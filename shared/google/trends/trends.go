@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/groovili/gogtrends"
-	"github.com/MauCastillo/alana/shared/google/analizistrend"
 )
 
 func GetExplore(ctx context.Context) ([]*gogtrends.TrendingSearch, error) {
@@ -43,35 +42,4 @@ func GetExploreInput(ctx context.Context, inputs []*gogtrends.ComparisonItem) (*
 func GetTrendsCategories() map[string]string {
 	cats := gogtrends.TrendsCategories()
 	return cats
-}
-
-func GetBalanceTrendsRealTime(ctx context.Context, lenguage, localitation, category string) (int, error) {
-	gogtrends.Debug(false)
-	realtime, err := gogtrends.Realtime(ctx, lenguage, localitation, category)
-	if err != nil {
-		return 0, err
-	}
-
-	analizis := analizistrend.NewAnalizisTrend()
-	balance := analizis.GetBalanceRealtime(realtime)
-
-	return balance, nil
-}
-
-
-func GetBalanceDaily(ctx context.Context, lenguage, localitation string) (int, error) {
-	gogtrends.Debug(false)
-
-	daily, err := gogtrends.Daily(ctx, lenguage, localitation)
-	if err != nil {
-		return 0, err
-	}
-
-	analizis := analizistrend.NewAnalizisTrend()
-	balance := analizis.GetBalanceDaily(daily)
-
-
-
-
-	return int(balance), nil
 }
