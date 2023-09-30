@@ -20,22 +20,17 @@ var (
 	databaseDynamoDB = dynamodb.NewDynamoDB()
 )
 
-func SavewareHouse(coin *symbols.Symbols, simulation *simultor.Simulator, goodPrice, hightPrice float64) error {
+func SavewareHouse(coin *symbols.Symbols, simulation *simultor.Simulator, analizis *analizistrend.AnalizisTrend, goodPrice, hightPrice float64) error {
 	now := time.Now().UTC()
 	formatted := now.Format(dateFormat)
 
-	analizis := analizistrend.NewAnalizisTrend()
-
-	balanceEconomic := 0
-	balanceCryptocurrency := 0
-
-	balance, err := analizis.GetBalanceTrendsRealTime(context.Background(), "EN", "US", "b")
+	err := analizis.Refresh(context.Background())
 	if err != nil {
-		print(err)
+		print("=> error refresh: ", err.Error())
 	}
 
-	balanceCryptocurrency = balance.Cryptocurrency
-	balanceEconomic = balance.Economic
+	balanceCryptocurrency := analizis.RealtimeArticleBalance.Cryptocurrency
+	balanceEconomic := analizis.RealtimeArticleBalance.Economic
 
 	op := models.Operation{
 		Pass:                       fmt.Sprintf("%s_%s", coin.Name, formatted),

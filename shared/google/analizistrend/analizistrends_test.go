@@ -10,7 +10,11 @@ import (
 func TestGetBalanceRealtime(t *testing.T) {
 	c := require.New(t)
 
-	analizis := NewAnalizisTrend()
+	analizis, err := NewAnalizisTrend(context.Background(), "EN", "US", "b")
+	c.NoError(err)
+
+	err = analizis.Refresh(context.Background())
+	c.NoError(err)
 
 	balance, err := analizis.GetBalanceTrendsRealTime(context.Background(), "EN", "US", "b")
 	c.NoError(err)
@@ -21,7 +25,8 @@ func TestGetBalanceRealtime(t *testing.T) {
 func TestGetBalanceDaily(t *testing.T) {
 	c := require.New(t)
 
-	analizis := NewAnalizisTrend()
+	analizis, err := NewAnalizisTrend(context.Background(), "EN", "US", "b")
+	c.NoError(err)
 
 	balance, err := analizis.GetBalanceDaily(context.Background(), "EN", "US")
 	c.NoError(err)

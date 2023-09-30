@@ -6,6 +6,7 @@ import (
 	"github.com/MauCastillo/alana/binance-api/intervals"
 	"github.com/MauCastillo/alana/binance-api/symbols"
 	"github.com/MauCastillo/alana/operations/scalping/simultor"
+	"github.com/MauCastillo/alana/shared/google/analizistrend"
 	"github.com/stretchr/testify/require"
 )
 
@@ -19,6 +20,8 @@ func TestSavewareHouse(t *testing.T) {
 	simulation, err := simultor.NewSimulator(coin, *intervals.Minute, 60)
 	c.NoError(err)
 
-	err = SavewareHouse(symbols.EthUsdt, simulation, float64(123), float64(33))
+	trend := &analizistrend.AnalizisTrend{RealtimeArticleBalance: &analizistrend.Analizis{Economic: 8, Cryptocurrency: 5}}
+
+	err = SavewareHouse(symbols.EthUsdt, simulation, trend, float64(123), float64(33))
 	c.NoError(err)
 }

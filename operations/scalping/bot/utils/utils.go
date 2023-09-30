@@ -9,6 +9,7 @@ import (
 	"github.com/MauCastillo/alana/operations/scalping/database"
 	"github.com/MauCastillo/alana/operations/scalping/simultor"
 	"github.com/MauCastillo/alana/shared/convertions"
+	"github.com/MauCastillo/alana/shared/google/analizistrend"
 )
 
 var (
@@ -43,7 +44,7 @@ func Iterractor(coin *symbols.Symbols, limitKline int) (*simultor.Simulator, err
 	return simulation, err
 }
 
-func GetBestValue(s *simultor.Simulator, coin *symbols.Symbols, limitKline int) (float64, error) {
+func GetBestValue(s *simultor.Simulator, coin *symbols.Symbols, limitKline int, analizis *analizistrend.AnalizisTrend) (float64, error) {
 	simulation, err := simultor.NewSimulator(coin, *intervals.Minute, limitKline)
 	if err != nil {
 		Mistakes++
@@ -56,12 +57,12 @@ func GetBestValue(s *simultor.Simulator, coin *symbols.Symbols, limitKline int) 
 
 	goodPrice = simulation.ObjectivePrice(s.GetPriceBuy())
 
-	err = database.SavewareHouse(coin, s, goodPrice, simulation.BestPriceCoin())
+	err = database.SavewareHouse(coin, s, analizis, goodPrice, simulation.BestPriceCoin())
 	if err != nil {
 		return float64(0), nil
 	}
 	fmt.Println(coin.Name)
-	fmt.Println("======= Guardando en Dynamodb ========")
+	fmt.Println("*** Saving data in DynamoDB Table ***")
 
 	return simulation.ObjectivePrice(s.GetPriceBuy()), nil
 }
@@ -73,7 +74,7 @@ func countdown(minute int) {
 	}
 }
 
-func RunCollector(coin *symbols.Symbols, limitKline, waitingPeriod, cycles, periodSell int) (*Util, error) {
+func RunCollector(coin *symbols.Symbols, limitKline, waitingPeriod, cycles, periodSell int, analizis *analizistrend.AnalizisTrend) (*Util, error) {
 	earn := float64(0)
 
 	for i := 0; i < cycles; i++ {
@@ -83,7 +84,7 @@ func RunCollector(coin *symbols.Symbols, limitKline, waitingPeriod, cycles, peri
 		}
 
 		countdown(waitingPeriod)
-		best, err := GetBestValue(simulation, coin, periodSell)
+		best, err := GetBestValue(simulation, coin, periodSell, analizis)
 		if err != nil {
 			return nil, err
 		}

@@ -15,7 +15,7 @@ var (
 	ErrorTimeOutSatellite = errors.New("satellite information is no longer available timeout")
 	// ErrorNotFoundSatellite satellite not found
 	ErrorNotFoundSatellite = errors.New("satellite not found")
-	TableName             = env.GetString("TABLE_NAME", "collector-binance")
+	TableName             = env.GetString("TABLE_NAME", "basic_training")
 	TimeOut               = env.GetInt64("TIMEOUT", 5)
 )
 

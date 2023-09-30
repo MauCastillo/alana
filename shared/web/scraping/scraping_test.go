@@ -13,6 +13,7 @@ func TestScraping(t *testing.T) {
 
 	report, err := NewReport("")
 	c.EqualError(err, ErrorEmptyURL.Error())
+	c.Nil(report)
 
 	report, err = NewReport(url)
 	c.NoError(err)

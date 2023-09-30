@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"sync"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"github.com/MauCastillo/alana/operations/scalping/bot/utils"
 	"github.com/MauCastillo/alana/operations/scalping/models"
 	"github.com/MauCastillo/alana/shared/env"
+	"github.com/MauCastillo/alana/shared/google/analizistrend"
 )
 
 const (
@@ -34,10 +36,10 @@ var (
 	}
 )
 
-func collector(s models.ExecutionParams) {
+func collector(s models.ExecutionParams, analizis *analizistrend.AnalizisTrend) {
 	defer wg.Done()
 	fmt.Println("=> Started collector to : ", s.Coin.Name)
-	_, err := utils.RunCollector(&s.Coin, s.LimitKline, s.WaitingPeriod, s.Cycles, s.PeriodSell)
+	_, err := utils.RunCollector(&s.Coin, s.LimitKline, s.WaitingPeriod, s.Cycles, s.PeriodSell, analizis)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -47,24 +49,29 @@ func collector(s models.ExecutionParams) {
 }
 
 func main() {
+	analizis, err := analizistrend.NewAnalizisTrend(context.Background(), "EN", "US", "b")
+	if err != nil {
+		print(err)
+	}
+
 	start := time.Now()
 	for _, s := range inputs {
 		wg.Add(1)
 		go func(index models.ExecutionParams) {
-			collector(index)
+			collector(index, analizis)
 		}(s)
 
-		fmt.Println("________________")
+		fmt.Println("___________________________")
 		fmt.Println(s)
-		fmt.Print("....Llamando......")
+		fmt.Print(" *** Collector Information *** ")
 	}
 
 	wg.Wait()
 	currentTime := time.Now()
 
-	fmt.Println("=> Start Time: ", start.Format(dateFormat))
-	fmt.Println("___________")
+	fmt.Println("=> Starting collector Time: ", start.Format(dateFormat))
+	fmt.Println("_____________________________________________________")
 	fmt.Printf(" => Ciclos: %d Periodo de espera: %d Minutos de Klines: %d \n", cycles, waitingPeriod, limitKline)
-	fmt.Println("___________")
+	fmt.Println("_____________________________________________________")
 	fmt.Println("=> Todas las funciones asíncronas han finalizado: ", currentTime.Format(dateFormat))
 }
