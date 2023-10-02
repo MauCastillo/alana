@@ -15,7 +15,8 @@ const (
 )
 
 var (
-	lastTime = ""
+	lastTime        = ""
+	dateLastRefresh = time.Now().UTC()
 )
 
 type FearAndGreedCNN struct {
@@ -31,6 +32,25 @@ func NewFearAndGreedCNN() (*FearAndGreedCNN, error) {
 	return &FearAndGreedCNN{apiResponse: cnnResponse}, nil
 }
 
+func (f *FearAndGreedCNN) Refresh() error {
+	dateNow := time.Now().UTC()
+	diff := dateNow.Sub(dateLastRefresh)
+
+	oneHour := time.Second
+	if diff < oneHour {
+		return nil
+	}
+
+	cnnResponse, err := requestCNNAPI()
+	if err != nil {
+		return err
+	}
+
+	f.apiResponse = cnnResponse
+
+	return nil
+}
+
 func requestCNNAPI() (*models.APIResponse, error) {
 
 	var response models.APIResponse
@@ -44,6 +64,8 @@ func requestCNNAPI() (*models.APIResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	dateLastRefresh = time.Now().UTC()
 
 	return &response, nil
 }
@@ -78,7 +100,7 @@ func Refresh() ([]byte, error) {
 
 func (f *FearAndGreedCNN) Get() *models.APIResponse {
 	now := time.Now()
-	
+
 	if lastTime != now.Format(timeFormatter) {
 		cnnResponse, err := requestCNNAPI()
 		if err != nil {
@@ -87,6 +109,6 @@ func (f *FearAndGreedCNN) Get() *models.APIResponse {
 
 		f.apiResponse = cnnResponse
 	}
-	
+
 	return f.apiResponse
 }

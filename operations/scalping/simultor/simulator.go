@@ -39,7 +39,7 @@ func (s *Simulator) GetPriceBuy() float64 {
 	return s.priceBuy
 }
 
-func NewSimulator(coin *symbols.Symbols, interval intervals.Interval, limitKline int) (*Simulator, error) {
+func NewSimulator(coin *symbols.Symbols, interval intervals.Interval, limitKline int, cnnReport *cnn.FearAndGreedCNN ) (*Simulator, error) {
 	localKlineCurrent, err := services.NewKlineService(*coin, interval, limitKline)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -69,7 +69,7 @@ func NewSimulator(coin *symbols.Symbols, interval intervals.Interval, limitKline
 		service:               localKlineCurrent,
 		serviceBTC:            localKlineBTC,
 		serviceETH:            localKlineETH,
-		FearAndGreedCNN:       FearAndGreed(),
+		FearAndGreedCNN:       FearAndGreed(cnnReport),
 		priceBuy:              float64(-1),
 	}
 
@@ -110,13 +110,13 @@ func (s *Simulator) BestPriceCoin() float64 {
 	return convertions.StringToFloat64(bestOption.Close)
 }
 
-func FearAndGreed() *models.APIResponse {
-	request, err := cnn.NewFearAndGreedCNN()
+func FearAndGreed(cnnReport *cnn.FearAndGreedCNN) *models.APIResponse {
+	err := cnnReport.Refresh()
 	if err != nil {
 		return nil
 	}
 
-	req := request.Get()
+	req := cnnReport.Get()
 
 	return req
 }

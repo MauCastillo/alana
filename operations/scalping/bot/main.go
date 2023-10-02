@@ -9,6 +9,7 @@ import (
 	"github.com/MauCastillo/alana/binance-api/symbols"
 	"github.com/MauCastillo/alana/operations/scalping/bot/utils"
 	"github.com/MauCastillo/alana/operations/scalping/models"
+	"github.com/MauCastillo/alana/shared/cnn"
 	"github.com/MauCastillo/alana/shared/env"
 	"github.com/MauCastillo/alana/shared/google/analizistrend"
 )
@@ -36,10 +37,10 @@ var (
 	}
 )
 
-func collector(s models.ExecutionParams, analizis *analizistrend.AnalizisTrend) {
+func collector(s models.ExecutionParams, analizis *analizistrend.AnalizisTrend, cnn *cnn.FearAndGreedCNN) {
 	defer wg.Done()
 	fmt.Println("=> Started collector to : ", s.Coin.Name)
-	_, err := utils.RunCollector(&s.Coin, s.LimitKline, s.WaitingPeriod, s.Cycles, s.PeriodSell, analizis)
+	_, err := utils.RunCollector(&s.Coin, s.LimitKline, s.WaitingPeriod, s.Cycles, s.PeriodSell, analizis, cnn)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -52,16 +53,23 @@ func main() {
 	analizis, err := analizistrend.NewAnalizisTrend(context.Background(), "EN", "US", "b")
 	if err != nil {
 		print(err)
+		panic(err)
+	}
+
+	requestCNN, err := cnn.NewFearAndGreedCNN()
+	if err != nil {
+		print(err)
+		panic(err)
 	}
 
 	start := time.Now()
 	for _, s := range inputs {
 		wg.Add(1)
 		go func(index models.ExecutionParams) {
-			collector(index, analizis)
+			collector(index, analizis, requestCNN)
 		}(s)
 
-		fmt.Println("___________________________")
+		fmt.Println(" ***************************** ")
 		fmt.Println(s)
 		fmt.Print(" *** Collector Information *** ")
 	}
