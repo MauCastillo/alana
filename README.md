@@ -1,7 +1,7 @@
 # alana
 # What is Alana Project?
 
-It is the creation of a bot with the ability to predict the behavior of the cryptocurrency market.
+It is a bot that predicts the behavior of the cryptocurrency market using a neural network.
 Using a basic Neuronal Network:
 Now Aviailable:
 <ol>
