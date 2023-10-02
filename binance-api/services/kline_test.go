@@ -11,7 +11,7 @@ import (
 func TestGetNewKlineService(t *testing.T) {
 	c := require.New(t)
 
-	klineService, err := NewKlineService(*symbols.BtcBusd, *intervals.FifteenMinutes, 10)
+	klineService, err := NewKlineService(*symbols.DotUsdt, *intervals.FifteenMinutes, 10)
 	c.NoError(err)
 	c.Len(klineService.Kline, 10)
 

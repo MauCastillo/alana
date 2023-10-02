@@ -20,6 +20,7 @@
 # Go workspace file
 go.work
 
+storage_models
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -32,3 +33,6 @@ go.work
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+# Byte-compiled / optimized / DLL files
+__pycache__/

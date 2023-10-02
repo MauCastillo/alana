@@ -61,16 +61,6 @@ func TestGetTrendsCategories(t *testing.T) {
 	c.Equal(category, trendsCategories)
 }
 
-func TestGetTrendsRealTime(t *testing.T) {
-	c := require.New(t)
-	ctx := context.Background()
-
-	realtime, err := GetTrendsRealTime(ctx, "EN", "US", "b")
-	c.NoError(err)
-
-	c.Equal(realtime[0].Title, "all")
-}
-
 func TestGetSearch(t *testing.T) {
 	c := require.New(t)
 
@@ -78,5 +68,5 @@ func TestGetSearch(t *testing.T) {
 
 	exploreResponse, err := GetSearch(ctx)
 	c.NoError(err)
-	c.Equal(exploreResponse[0].Title, "")
+	c.Equal(exploreResponse[0].Title, "Bitcoin")
 }

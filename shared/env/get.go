@@ -3,10 +3,14 @@ package env
 import (
 	"os"
 	"strconv"
+
+	"github.com/joho/godotenv"
 )
 
 // GetBool gets the env var as a boolean
 func GetBool(envVarName string, defaultValue bool) bool {
+	_ = godotenv.Load()
+
 	stringValue, ok := os.LookupEnv(envVarName)
 	if !ok {
 		return defaultValue
@@ -24,6 +28,8 @@ func GetBool(envVarName string, defaultValue bool) bool {
 
 // GetInt64 gets the env var as an int
 func GetInt64(envVarName string, defaultValue int64) int64 {
+	_ = godotenv.Load()
+
 	val, ok := os.LookupEnv(envVarName)
 	if !ok {
 		return defaultValue
@@ -39,6 +45,8 @@ func GetInt64(envVarName string, defaultValue int64) int64 {
 
 // GetFloat64 gets the env var a float
 func GetFloat64(envVarName string, defaultValue float64) float64 {
+	_ = godotenv.Load()
+
 	val, ok := os.LookupEnv(envVarName)
 	if !ok {
 		return defaultValue
@@ -54,6 +62,8 @@ func GetFloat64(envVarName string, defaultValue float64) float64 {
 
 // GetString gets the env var as a string
 func GetString(envVarName string, defaultValue string) string {
+	_ = godotenv.Load()
+
 	stringValue, _ := os.LookupEnv(envVarName)
 	if stringValue == "" {
 		return defaultValue

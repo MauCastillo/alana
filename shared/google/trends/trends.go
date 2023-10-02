@@ -3,7 +3,6 @@ package trends
 import (
 	"context"
 
-	// "github.com/MauCastillo/alana/shared/google/trends"
 	"github.com/groovili/gogtrends"
 )
 
@@ -28,7 +27,7 @@ func GetExploreInput(ctx context.Context, inputs []*gogtrends.ComparisonItem) (*
 	compare, err := gogtrends.Explore(ctx,
 		&gogtrends.ExploreRequest{
 			ComparisonItems: inputs,
-			Category:        31, // Programming category
+			Category:        31,
 			Property:        "",
 		}, "EN")
 
@@ -43,13 +42,4 @@ func GetExploreInput(ctx context.Context, inputs []*gogtrends.ComparisonItem) (*
 func GetTrendsCategories() map[string]string {
 	cats := gogtrends.TrendsCategories()
 	return cats
-}
-
-func GetTrendsRealTime(ctx context.Context, lenguage, localitation, category string) ([]*gogtrends.TrendingStory, error) {
-	realtime, err := gogtrends.Realtime(ctx, lenguage, localitation, category)
-	if err != nil {
-		return nil, err
-	}
-
-	return realtime, nil
 }

@@ -8,7 +8,9 @@ import (
 	"github.com/MauCastillo/alana/binance-api/symbols"
 	"github.com/MauCastillo/alana/operations/scalping/database"
 	"github.com/MauCastillo/alana/operations/scalping/simultor"
+	"github.com/MauCastillo/alana/shared/cnn"
 	"github.com/MauCastillo/alana/shared/convertions"
+	"github.com/MauCastillo/alana/shared/google/analizistrend"
 )
 
 var (
@@ -18,7 +20,7 @@ var (
 )
 
 const (
-	TableFormat = "oscillator_strenght_%s"
+	MinuteInSeconds = 60
 )
 
 type Util struct {
@@ -29,8 +31,8 @@ type Util struct {
 	Coin     symbols.Symbols `json:"coin"`
 }
 
-func Iterractor(coin *symbols.Symbols, limitKline int) (*simultor.Simulator, error) {
-	simulation, err := simultor.NewSimulator(coin, *intervals.Minute, limitKline)
+func Iterractor(coin *symbols.Symbols, limitKline int, cnnReport *cnn.FearAndGreedCNN) (*simultor.Simulator, error) {
+	simulation, err := simultor.NewSimulator(coin, *intervals.Minute, limitKline, cnnReport)
 	if err != nil {
 		return nil, err
 	}
@@ -43,8 +45,8 @@ func Iterractor(coin *symbols.Symbols, limitKline int) (*simultor.Simulator, err
 	return simulation, err
 }
 
-func GetBestValue(s *simultor.Simulator, coin *symbols.Symbols, limitKline int, tableName string) (float64, error) {
-	simulation, err := simultor.NewSimulator(coin, *intervals.Minute, limitKline)
+func GetBestValue(s *simultor.Simulator, coin *symbols.Symbols, limitKline int, analizis *analizistrend.AnalizisTrend, cnnReport *cnn.FearAndGreedCNN) (float64, error) {
+	simulation, err := simultor.NewSimulator(coin, *intervals.Minute, limitKline, cnnReport)
 	if err != nil {
 		Mistakes++
 		return float64(0), nil
@@ -52,38 +54,38 @@ func GetBestValue(s *simultor.Simulator, coin *symbols.Symbols, limitKline int, 
 
 	Good++
 
-	objetivePrice := 0.0
-	if simulation.ObjectivePrice() > s.GetPriceBuy() {
-		objetivePrice = simulation.ObjectivePrice()
-	}
+	goodPrice := 0.0
 
-	err = database.SavewareHouse(s, objetivePrice, simulation.BestPriceCoin(), tableName)
+	goodPrice = simulation.ObjectivePrice(s.GetPriceBuy())
+
+	err = database.SavewareHouse(coin, s, analizis, goodPrice, simulation.BestPriceCoin())
 	if err != nil {
 		return float64(0), nil
 	}
+	fmt.Println(coin.Name)
+	fmt.Println("*** Saving data in DynamoDB Table ***")
 
-	return simulation.ObjectivePrice(), nil
+	return simulation.ObjectivePrice(s.GetPriceBuy()), nil
 }
 
 func countdown(minute int) {
-	second := minute * 60
+	second := minute * MinuteInSeconds
 	for i := second; i >= 0; i-- {
 		time.Sleep(time.Second)
 	}
 }
 
-func RunCollector(coin *symbols.Symbols, limitKline, waitingPeriod, cycles, periodSell int) (*Util, error) {
-	tableName := fmt.Sprintf(TableFormat, coin.Name)
+func RunCollector(coin *symbols.Symbols, limitKline, waitingPeriod, cycles, periodSell int, analizis *analizistrend.AnalizisTrend, cnnReport *cnn.FearAndGreedCNN) (*Util, error) {
 	earn := float64(0)
 
 	for i := 0; i < cycles; i++ {
-		simulation, err := Iterractor(coin, limitKline)
+		simulation, err := Iterractor(coin, limitKline, cnnReport)
 		if err != nil {
 			return nil, err
 		}
 
 		countdown(waitingPeriod)
-		best, err := GetBestValue(simulation, coin, periodSell, tableName)
+		best, err := GetBestValue(simulation, coin, periodSell, analizis, cnnReport)
 		if err != nil {
 			return nil, err
 		}
