@@ -12,7 +12,7 @@ build:
 	rm -f $(BUILD_NAME_MAIN) 
 
 build_arm:	
-	GOOS=linux GOARCH=arm go build -o $(BUILD_ARM_NAME_MAIN) main.go
+	env GOOS=linux GOARCH=arm GOARM=5 go build -o $(BUILD_ARM_NAME_MAIN) main.go
 	# cp -b $(BUILD_ARM_NAME_MAIN)  ../../../build/arm/
 	# rm -f $(BUILD_ARM_NAME_MAIN) 
 

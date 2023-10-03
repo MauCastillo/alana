@@ -49,17 +49,17 @@ func collector(s models.ExecutionParams, analizis *analizistrend.AnalizisTrend, 
 
 }
 
-func main() {
+func Start() error {
 	analizis, err := analizistrend.NewAnalizisTrend(context.Background(), "EN", "US", "b")
 	if err != nil {
-		print(err)
-		panic(err)
+		print(err.Error())
+		return err
 	}
 
 	requestCNN, err := cnn.NewFearAndGreedCNN()
 	if err != nil {
-		print(err)
-		panic(err)
+		print(err.Error())
+		return err
 	}
 
 	start := time.Now()
@@ -82,4 +82,14 @@ func main() {
 	fmt.Printf(" => Ciclos: %d Periodo de espera: %d Minutos de Klines: %d \n", cycles, waitingPeriod, limitKline)
 	fmt.Println("_____________________________________________________")
 	fmt.Println("=> Todas las funciones asíncronas han finalizado: ", currentTime.Format(dateFormat))
+
+	return nil
+}
+
+func main() {
+	fmt.Print("Todo esta inciando... ")
+	err := Start()
+	if err != nil {
+		print(err)
+	}
 }
