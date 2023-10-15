@@ -25,6 +25,7 @@ type Operation struct {
 	Status                     bool            `json:"status"`
 	Cryptocurrency             int             `json:"cryptocurrency_balance" bson:"cryptocurrency_balance"`
 	Economic                   int             `json:"economic_balance" bson:"economic_balance"`
+	TargetPrice                float64         `json:"target_price" bson:"target_price"`
 }
 
 type ExecutionParams struct {

@@ -26,6 +26,6 @@ func TestSavewareHouse(t *testing.T) {
 
 	trend := &analizistrend.AnalizisTrend{RealtimeArticleBalance: &analizistrend.Analizis{Economic: 8, Cryptocurrency: 5}}
 
-	err = SavewareHouse(symbols.EthUsdt, simulation, trend, float64(123), float64(33))
+	err = SavewareHouse(symbols.EthUsdt, simulation, trend, float64(123), float64(33), float64(33))
 	c.NoError(err)
 }
