@@ -3,9 +3,9 @@ module github.com/MauCastillo/alana
 go 1.20
 
 require (
-	github.com/MauCastillo/fuego-quasar v0.0.0-20230813012320-252a3e6d5b0d
 	github.com/adshao/go-binance/v2 v2.4.2
 	github.com/aws/aws-sdk-go v1.45.6
+	github.com/gocolly/colly v1.2.0
 	github.com/groovili/gogtrends v1.7.0
 	github.com/joho/godotenv v1.5.1
 	github.com/mattn/go-sqlite3 v1.14.17
@@ -21,7 +21,6 @@ require (
 	github.com/bitly/go-simplejson v0.5.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
-	github.com/gocolly/colly v1.2.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect

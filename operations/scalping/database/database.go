@@ -20,7 +20,7 @@ var (
 	databaseDynamoDB = dynamodb.NewDynamoDB()
 )
 
-func SavewareHouse(coin *symbols.Symbols, simulation *simultor.Simulator, analizis *analizistrend.AnalizisTrend, goodPrice, hightPrice float64) error {
+func SavewareHouse(coin *symbols.Symbols, simulation *simultor.Simulator, analizis *analizistrend.AnalizisTrend, goodPrice, hightPrice, targetPrice float64) error {
 	now := time.Now().UTC()
 	formatted := now.Format(dateFormat)
 
@@ -49,6 +49,7 @@ func SavewareHouse(coin *symbols.Symbols, simulation *simultor.Simulator, analiz
 		MarketInfoBTC:              simulation.RawDataDatabaseBTC(),
 		GoodPrice:                  goodPrice,
 		Status:                     goodPrice > 0,
+		TargetPrice:                targetPrice,
 		Economic:                   balanceEconomic,
 		Cryptocurrency:             balanceCryptocurrency,
 	}

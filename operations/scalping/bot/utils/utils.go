@@ -54,18 +54,20 @@ func GetBestValue(s *simultor.Simulator, coin *symbols.Symbols, limitKline int, 
 
 	Good++
 
-	goodPrice := 0.0
 
-	goodPrice = simulation.ObjectivePrice(s.GetPriceBuy())
 
-	err = database.SavewareHouse(coin, s, analizis, goodPrice, simulation.BestPriceCoin())
+	targetPrice := simulation.TargetPrice(s.GetPriceBuy())
+
+	goodPrice := simulation.GoodPrice()
+
+	err = database.SavewareHouse(coin, s, analizis, goodPrice, simulation.BestPriceCoin(), targetPrice)
 	if err != nil {
 		return float64(0), nil
 	}
 	fmt.Println(coin.Name)
 	fmt.Println("*** Saving data in DynamoDB Table ***")
 
-	return simulation.ObjectivePrice(s.GetPriceBuy()), nil
+	return simulation.GoodPrice(), nil
 }
 
 func countdown(minute int) {

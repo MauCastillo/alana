@@ -1,7 +1,7 @@
 LOGDATE = $(shell date +'%Y_%m_%d')
 BUILD_NAME_TEST = test-latest_$(LOGDATE)
 BUILD_NAME_MAIN = main-latest_$(LOGDATE)
-BUILD_ARM_NAME_MAIN = main-arm64
+BUILD_ARM_NAME_MAIN = raspberry-bot_$(LOGDATE)
 
 run: 
 	go run main.go

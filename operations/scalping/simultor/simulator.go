@@ -16,7 +16,7 @@ import (
 
 var (
 	periodStochasticOscillator = env.GetInt64("PERIOD_STOCHASTIS_OSCILLATOR", 3)
-	expectedProfit             = env.GetFloat64("PROFIT", float64(0.15))
+	expectedProfit             = env.GetFloat64("PROFIT", float64(0.012))
 )
 
 type Simulator struct {
@@ -39,7 +39,7 @@ func (s *Simulator) GetPriceBuy() float64 {
 	return s.priceBuy
 }
 
-func NewSimulator(coin *symbols.Symbols, interval intervals.Interval, limitKline int, cnnReport *cnn.FearAndGreedCNN ) (*Simulator, error) {
+func NewSimulator(coin *symbols.Symbols, interval intervals.Interval, limitKline int, cnnReport *cnn.FearAndGreedCNN) (*Simulator, error) {
 	localKlineCurrent, err := services.NewKlineService(*coin, interval, limitKline)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -85,23 +85,30 @@ func (s *Simulator) CurrentPrice() *binance.SymbolPrice {
 	return price
 }
 
-func (s *Simulator) ObjectivePrice(priceBuy float64) float64 {
+func (s *Simulator) TargetPrice(priceBuy float64) float64 {
 	profit := priceBuy * expectedProfit
 
 	goodProfit := priceBuy + profit
-
 
 	bestOption := s.service.MaxValueClose()
 	close := convertions.StringToFloat64(bestOption.Close)
 	low := convertions.StringToFloat64(bestOption.Low)
 
-	avgPrice :=  (close + low) / 2
+	avgPrice := (close + low) / 2
 
-	if avgPrice < goodProfit{
+	if avgPrice < goodProfit {
 		return 0
 	}
 
 	return goodProfit
+}
+
+func (s *Simulator) GoodPrice() float64 {
+	bestOption := s.service.MaxValueClose()
+	close := convertions.StringToFloat64(bestOption.Close)
+	low := convertions.StringToFloat64(bestOption.Low)
+
+	return (close + low) / 2
 }
 
 func (s *Simulator) BestPriceCoin() float64 {
