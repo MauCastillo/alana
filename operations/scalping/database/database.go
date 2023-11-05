@@ -26,7 +26,7 @@ func SavewareHouse(coin *symbols.Symbols, simulation *simultor.Simulator, analiz
 
 	err := analizis.Refresh(context.Background())
 	if err != nil {
-		print("=> error refresh: ", err.Error())
+		return err
 	}
 
 	balanceCryptocurrency := analizis.RealtimeArticleBalance.Cryptocurrency
@@ -52,6 +52,7 @@ func SavewareHouse(coin *symbols.Symbols, simulation *simultor.Simulator, analiz
 		TargetPrice:                targetPrice,
 		Economic:                   balanceEconomic,
 		Cryptocurrency:             balanceCryptocurrency,
+		HightPrice:                 hightPrice,
 	}
 
 	return databaseDynamoDB.SaveRow(op)

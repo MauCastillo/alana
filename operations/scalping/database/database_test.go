@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"testing"
 
 	"github.com/MauCastillo/alana/binance-api/intervals"
@@ -24,8 +25,11 @@ func TestSavewareHouse(t *testing.T) {
 	simulation, err := simultor.NewSimulator(coin, *intervals.Minute, 60, requestCNN)
 	c.NoError(err)
 
-	trend := &analizistrend.AnalizisTrend{RealtimeArticleBalance: &analizistrend.Analizis{Economic: 8, Cryptocurrency: 5}}
+	analizis, err := analizistrend.NewAnalizisTrend(context.Background(), "EN", "US", "b")
+	c.NoError(err)
 
-	err = SavewareHouse(symbols.EthUsdt, simulation, trend, float64(123), float64(33), float64(33))
+	analizis.RealtimeArticleBalance =  &analizistrend.Analizis{Economic: 8, Cryptocurrency: 5}
+
+	err = SavewareHouse(symbols.EthUsdt, simulation, analizis, float64(123), float64(33), float64(33))
 	c.NoError(err)
 }
