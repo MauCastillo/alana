@@ -27,7 +27,6 @@ type Simulator struct {
 	Symbol                *symbols.Symbols
 	service               *services.KlineService
 	serviceBTC            *services.KlineService
-	serviceETH            *services.KlineService
 	priceBuy              float64
 }
 
@@ -52,12 +51,6 @@ func NewSimulator(coin *symbols.Symbols, interval intervals.Interval, limitKline
 		return nil, err
 	}
 
-	localKlineETH, err := services.NewKlineService(*symbols.EthUsdt, interval, limitKline)
-	if err != nil {
-		fmt.Println(err.Error())
-		return nil, err
-	}
-
 	stochasticOscillatorK, stochasticOscillatorD := technicalanalysis.CalculateStochasticOscillator(localKlineCurrent.Kline, int(periodStochasticOscillator))
 	relativeStrenghtIndex := technicalanalysis.CalculateRSI(localKlineCurrent.Kline)
 
@@ -68,7 +61,6 @@ func NewSimulator(coin *symbols.Symbols, interval intervals.Interval, limitKline
 		Symbol:                coin,
 		service:               localKlineCurrent,
 		serviceBTC:            localKlineBTC,
-		serviceETH:            localKlineETH,
 		FearAndGreedCNN:       FearAndGreed(cnnReport),
 		priceBuy:              float64(-1),
 	}
@@ -136,10 +128,10 @@ func (s *Simulator) RawDataDatabase() []float64 {
 	return output
 }
 
-func (s *Simulator) RawDataDatabaseETH() []float64 {
+func (s *Simulator) VolumenCurrency() []float64 {
 	var output []float64
-	for _, element := range s.serviceETH.Kline {
-		output = append(output, convertions.StringToFloat64(element.Close))
+	for _, element := range s.service.Kline {
+		output = append(output, convertions.StringToFloat64(element.Volume))
 	}
 	return output
 }
@@ -148,6 +140,14 @@ func (s *Simulator) RawDataDatabaseBTC() []float64 {
 	var output []float64
 	for _, element := range s.serviceBTC.Kline {
 		output = append(output, convertions.StringToFloat64(element.Close))
+	}
+	return output
+}
+
+func (s *Simulator) VolumenCurrencyBTC() []float64 {
+	var output []float64
+	for _, element := range s.serviceBTC.Kline {
+		output = append(output, convertions.StringToFloat64(element.Volume))
 	}
 	return output
 }

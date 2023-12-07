@@ -20,8 +20,9 @@ type Operation struct {
 	MarketMomentumSp500Score   float64         `json:"market_momentum_sp500_score"`
 	PriceBuy                   float64         `json:"price_buy"`
 	SafeHavenDemandScore       float64         `json:"safe_haven_demand_score"`
-	MarketInfo                 []float64       `json:"market_info"`
-	MarketInfoBTC              []float64       `json:"market_info_btc"`
+	MarketCurrency             []float64       `json:"market_currency"`
+	VolumenCurrency            []float64       `json:"volumen_currency"`
+	VolumenInfoBTC             []float64       `json:"volumen_info_btc"`
 	Status                     bool            `json:"status"`
 	Cryptocurrency             int             `json:"cryptocurrency_balance" bson:"cryptocurrency_balance"`
 	Economic                   int             `json:"economic_balance" bson:"economic_balance"`

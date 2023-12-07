@@ -69,9 +69,9 @@ func Start() error {
 			collector(index, analizis, requestCNN)
 		}(s)
 
-		fmt.Println(" ***************************** ")
+		fmt.Println("*_____________________ Collector logs ______________________*")
 		fmt.Println(s)
-		fmt.Print(" *** Collector Information *** ")
+		fmt.Print("*___________________________________________*")
 	}
 
 	wg.Wait()
@@ -87,7 +87,7 @@ func Start() error {
 }
 
 func main() {
-	fmt.Print("Todo esta inciando... ")
+	fmt.Print("Staring collector")
 	err := Start()
 	if err != nil {
 		print(err)

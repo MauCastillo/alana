@@ -10,7 +10,7 @@ import (
 
 const (
 	pokemonAPI = "https://pokeapi.co/api/v2/ability/?offset=1&limit=1"
-	cnnAPI     = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata/2023-06-12"
+	cnnAPI     = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata/2023-12-07"
 )
 
 type pokemon struct {
@@ -63,7 +63,7 @@ func TestGetHeaders(t *testing.T) {
 	err = json.Unmarshal(body, &response)
 	c.NoError(err)
 
-	c.Equal("extreme greed", response.FearAndGreed.Rating)
+	c.NotEqual("", response.FearAndGreed.Rating)
 }
 func TestGetEmpty(t *testing.T) {
 	c := require.New(t)
