@@ -13,22 +13,13 @@ import (
 	"github.com/MauCastillo/alana/shared/google/analizistrend"
 )
 
-var (
-	Good     = 0
-	Mistakes = 0
-	Neutral  = 0
-)
-
 const (
 	MinuteInSeconds = 60
 )
 
 type Util struct {
-	Accuracy int             `json:"accuracy"`
-	Mistakes int             `json:"mistakes"`
-	Neutral  int             `json:"neutral"`
-	Earn     float64         `json:"earn"`
-	Coin     symbols.Symbols `json:"coin"`
+	Earn float64         `json:"earn"`
+	Coin symbols.Symbols `json:"coin"`
 }
 
 func Iterractor(coin *symbols.Symbols, limitKline int, cnnReport *cnn.FearAndGreedCNN) (*simultor.Simulator, error) {
@@ -48,13 +39,8 @@ func Iterractor(coin *symbols.Symbols, limitKline int, cnnReport *cnn.FearAndGre
 func GetBestValue(s *simultor.Simulator, coin *symbols.Symbols, limitKline int, analizis *analizistrend.AnalizisTrend, cnnReport *cnn.FearAndGreedCNN) (float64, error) {
 	simulation, err := simultor.NewSimulator(coin, *intervals.Minute, limitKline, cnnReport)
 	if err != nil {
-		Mistakes++
 		return float64(0), nil
 	}
-
-	Good++
-
-
 
 	targetPrice := simulation.TargetPrice(s.GetPriceBuy())
 
@@ -64,6 +50,7 @@ func GetBestValue(s *simultor.Simulator, coin *symbols.Symbols, limitKline int, 
 	if err != nil {
 		return float64(0), nil
 	}
+
 	fmt.Println(coin.Name)
 	fmt.Println("*** Saving data in DynamoDB Table ***")
 
@@ -98,16 +85,9 @@ func RunCollector(coin *symbols.Symbols, limitKline, waitingPeriod, cycles, peri
 
 	}
 
-	accuracy := (100 / cycles) * Good
-	neutral := (100 / cycles) * Neutral
-	mistakes := (100 / cycles) * Mistakes
-
 	util := &Util{
-		Accuracy: accuracy,
-		Mistakes: mistakes,
-		Neutral:  neutral,
-		Earn:     earn,
-		Coin:     *coin,
+		Earn: earn,
+		Coin: *coin,
 	}
 
 	return util, nil
