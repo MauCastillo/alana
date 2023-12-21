@@ -20,7 +20,7 @@ var (
 )
 
 const (
-	MinuteInSeconds = 1
+	MinuteInSeconds = 60
 )
 
 type Util struct {
